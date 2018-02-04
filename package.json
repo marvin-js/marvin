@@ -2,8 +2,11 @@
   "name": "workflow",
   "version": "1.0.0",
   "main": "index.js",
-  "author": "Carlos Alexandre Fuechter <alexandref93@gmail.com>",
+  "author": "Carlos Alexandre Fuechter <fuechter.carlos@gmail.com>",
   "license": "MIT",
+  "bin": {
+    "workflow": "./bin/index.js"
+  },
   "dependencies": {
     "commander": "^2.13.0",
     "idx": "^2.2.0"
