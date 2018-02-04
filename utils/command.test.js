@@ -1,9 +1,10 @@
 import test from 'ava';
 import fs from 'fs';
+import sinon from 'sinon';
 
 import { writeFile } from '../utils-test/file';
 
-import { processCommand, processCommandFile } from './command';
+import { processCommand, processCommandFile, generateCommand } from './command';
 
 test('command empty should return undefined', t => {
   t.is(processCommand(), undefined);
@@ -105,3 +106,38 @@ test('process file command', t => {
 test.after('process file command', () => {
   fs.unlink(TEST_FILE_COMMAND);
 });
+
+const TEST_FILE_COMMAND_GENERATED = './temp/file-command-generated/.workflow';
+
+test.before('process file command generated', () => {
+  return new Promise(resolve => {
+    writeFile(TEST_FILE_COMMAND_GENERATED, `cp /test3 /test4\ncp /test4 /test5\nmv /test7 /test8 --force`, resolve);
+  });
+});
+
+test('process file command generated', t => {
+  return processCommandFile(TEST_FILE_COMMAND).then(actions => {
+
+    const cp = sinon.spy();
+    const mv = sinon.spy();
+
+    const libExternals = {
+      cp,
+      mv,
+    };
+
+    const actionsGenerated = generateCommand(actions, libExternals);
+
+    actionsGenerated.forEach(action => action());
+
+    t.true(cp.firstCall.calledWith({}, '/test3', '/test4'));
+    t.true(cp.secondCall.calledWith({}, '/test4', '/test5'));
+    t.true(mv.calledWith({force: true}, '/test7', '/test8'));
+  });
+});
+
+test.after('process file command generated', () => {
+  fs.unlink(TEST_FILE_COMMAND_GENERATED);
+});
+
+

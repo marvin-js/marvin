@@ -60,4 +60,10 @@ export function processCommandFile (fileToExecute) {
       },
     });
   });
-}
+};
+
+export function generateCommand (actions = [], libExternal = {}) {
+  return actions.map(action => {
+    return libExternal[action.command].bind({}, action.options, ...action.args);
+  });
+};
