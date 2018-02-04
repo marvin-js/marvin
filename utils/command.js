@@ -1,5 +1,7 @@
 import idx from 'idx';
 
+import { readFile } from './file';
+
 function isOption (value) {
   return value.indexOf('--') !== -1
 };
@@ -15,7 +17,7 @@ function setOption (option, callback = f => f) {
   callback(name, hasValue ? value : true);
 };
 
-export default function processCommand (command) {
+export function processCommand (command) {
 
   if (!command) return;
 
@@ -43,3 +45,19 @@ export default function processCommand (command) {
     options: config.options,
   };
 };
+
+export function processCommandFile (fileToExecute) {
+  return new Promise(resolve => {
+
+    const actions = [];
+
+    readFile(fileToExecute, {
+      eachLine: line => {
+        actions.push(processCommand(line));
+      },
+      onClose: () => {
+        resolve(actions);
+      },
+    });
+  });
+}

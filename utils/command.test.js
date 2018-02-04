@@ -1,12 +1,15 @@
 import test from 'ava';
+import fs from 'fs';
 
-import command from './command';
+import { writeFile } from '../utils-test/file';
+
+import { processCommand, processCommandFile } from './command';
 
 test('command empty should return undefined', t => {
-  t.is(command(), undefined);
-  t.is(command(undefined), undefined);
-  t.is(command(null), undefined);
-  t.is(command(''), undefined);
+  t.is(processCommand(), undefined);
+  t.is(processCommand(undefined), undefined);
+  t.is(processCommand(null), undefined);
+  t.is(processCommand(''), undefined);
 });
 
 test('command get config', t => {
@@ -19,7 +22,7 @@ test('command get config', t => {
     options: {},
   };
 
-  t.deepEqual(command(commandTest), resultObject);
+  t.deepEqual(processCommand(commandTest), resultObject);
 });
 
 test('command get config without args', t => {
@@ -32,7 +35,7 @@ test('command get config without args', t => {
     options: {},
   };
 
-  t.deepEqual(command(commandTest), resultObject);
+  t.deepEqual(processCommand(commandTest), resultObject);
 });
 
 test('command get config with options', t => {
@@ -47,7 +50,7 @@ test('command get config with options', t => {
     },
   };
 
-  t.deepEqual(command(commandTest), resultObject);
+  t.deepEqual(processCommand(commandTest), resultObject);
 });
 
 test('command get config with options-value', t => {
@@ -62,5 +65,43 @@ test('command get config with options-value', t => {
     },
   };
 
-  t.deepEqual(command(commandTest), resultObject);
+  t.deepEqual(processCommand(commandTest), resultObject);
+});
+
+const TEST_FILE_COMMAND = './temp/file-command/.workflow';
+
+test.before('process file command', () => {
+  return new Promise(resolve => {
+    writeFile(TEST_FILE_COMMAND, `cp /test3 /test4\ncp /test4 /test5\nmv /test7 /test8 --force`, resolve);
+  });
+});
+
+test('process file command', t => {
+  return processCommandFile(TEST_FILE_COMMAND).then(actions => {
+    const resultObject = [
+      {
+        command: 'cp',
+        args: ['/test3', '/test4'],
+        options: {},
+      },
+      {
+        command: 'cp',
+        args: ['/test4', '/test5'],
+        options: {},
+      },
+      {
+        command: 'mv',
+        args: ['/test7', '/test8'],
+        options: {
+          force: true,
+        },
+      },
+    ];
+
+    t.deepEqual(actions, resultObject);
+  });
+});
+
+test.after('process file command', () => {
+  fs.unlink(TEST_FILE_COMMAND);
 });
