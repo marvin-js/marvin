@@ -5,6 +5,20 @@
   "author": "Carlos Alexandre Fuechter <alexandref93@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "commander": "^2.13.0"
+    "commander": "^2.13.0",
+    "idx": "^2.2.0"
+  },
+  "devDependencies": {
+    "ava": "^0.25.0",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1"
+  },
+  "ava": {
+    "babel": "inherit",
+    "require": "babel-core/register"
+  },
+  "scripts": {
+    "start": "babel-node bin/index.js",
+    "test": "ava"
   }
 }
