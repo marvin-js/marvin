@@ -2,7 +2,7 @@ const fs = require('fs');
 const readline = require('readline');
 const stream = require('stream');
 
-export function processFile (inputFile, options = {}) {
+export function readFile (inputFile, options = {}) {
   const instream = fs.createReadStream(inputFile);
   const outstream = new stream();
   const rl = readline.createInterface(instream, outstream);

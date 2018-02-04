@@ -3,7 +3,7 @@ import fs from 'fs';
 import sinon from 'sinon';
 
 import { writeFile } from '../utils-test/file';
-import { processFile } from './file';
+import { readFile } from './file';
 
 const TEMP_FILE_LINE_BY_LINE = './temp/line-by-line/.workflow';
 
@@ -18,7 +18,7 @@ test('read line-by-line', t => {
 
     const eachLineSpy = sinon.spy();
 
-    processFile(TEMP_FILE_LINE_BY_LINE, {
+    readFile(TEMP_FILE_LINE_BY_LINE, {
       eachLine: eachLineSpy,
     });
 
