@@ -2,6 +2,8 @@
 
 > This project is experimental for now, so it's still simple. Soon will have more updates.
 
+[![Build Status: Linux](https://travis-ci.org/alexandref93/workflow.svg?branch=master)](https://travis-ci.org/alexandref93/workflow) 
+
 Create a workflow with a simple file.
 
 ## Usage
