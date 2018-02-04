@@ -67,3 +67,10 @@ export function generateCommand (actions = [], libExternal = {}) {
     return libExternal[action.command].bind({}, action.options, ...action.args);
   });
 };
+
+export function runFile (fileToExecute, libExternal) {
+  return processCommandFile(fileToExecute).then(actions => {
+    const actionsGenerated = generateCommand(actions, libExternal);
+    actionsGenerated.forEach(action => action());
+  });
+};
