@@ -1,0 +1,10 @@
+{
+  "name": "workflow",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Carlos Alexandre Fuechter <alexandref93@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^2.13.0"
+  }
+}
