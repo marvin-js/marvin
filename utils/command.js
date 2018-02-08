@@ -77,14 +77,44 @@ export function processCommandFile (fileToExecute) {
 };
 
 export function generateCommand (actions = [], libExternal = {}) {
-  return actions.map(action => {
-    return libExternal[action.command].bind({}, action.options, ...action.args);
-  });
+  return () => {
+    actions.map(async action => {
+
+      const executeSubCommands = () => {
+        if (action.commands.length > 0) {
+          generateCommand(action.commands, libExternal)();
+        }
+      };
+
+      const executeAction = () => {
+        const promise = libExternal[action.command].call({}, action.options, ...action.args);
+
+        if (!promise) return Promise.resolve();
+        
+        if (promise.then) {
+          return promise;
+        } else {
+          return Promise.resolve(promise);
+        }
+      };
+
+      if (action.options.async) {
+        executeAction().then(result => {
+          executeSubCommands();
+        });
+      } else {
+        const result = await executeAction();
+        executeSubCommands();
+      }
+    });
+
+    return Promise.resolve();
+  }
 };
 
 export function runFile (fileToExecute, libExternal) {
   return processCommandFile(fileToExecute).then(actions => {
-    const actionsGenerated = generateCommand(actions, libExternal);
-    actionsGenerated.forEach(action => action());
+    const execute = generateCommand(actions, libExternal);
+    return execute();
   });
 };

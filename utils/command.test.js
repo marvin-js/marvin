@@ -133,13 +133,13 @@ test('process file command generated', t => {
       mv,
     };
 
-    const actionsGenerated = generateCommand(actions, libExternals);
+    const execute = generateCommand(actions, libExternals);
 
-    actionsGenerated.forEach(action => action());
-
-    t.true(cp.firstCall.calledWith({}, '/test3', '/test4'));
-    t.true(cp.secondCall.calledWith({}, '/test4', '/test5'));
-    t.true(mv.calledWith({force: true}, '/test7', '/test8'));
+    return execute().then(() => {
+      t.true(cp.firstCall.calledWith({}, '/test3', '/test4'));
+      t.true(cp.secondCall.calledWith({}, '/test4', '/test5'));
+      t.true(mv.calledWith({force: true}, '/test7', '/test8'));
+    });
   });
 });
 
