@@ -15,13 +15,15 @@
     "ava": "^0.25.0",
     "babel-cli": "^6.26.0",
     "babel-plugin-syntax-async-functions": "^6.13.0",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
+    "import": "^0.0.6",
     "mkdirp": "^0.5.1",
     "sinon": "^4.2.2"
   },
   "ava": {
     "babel": "inherit",
-    "require": "babel-core/register"
+    "require": ["babel-core/register", "babel-polyfill"]
   },
   "scripts": {
     "start": "babel-node bin/index.js",
