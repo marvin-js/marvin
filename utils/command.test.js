@@ -21,6 +21,7 @@ test('command get config', t => {
     command: 'cp',
     args: ['/test2', '/test3'],
     options: {},
+    commands: [],
   };
 
   t.deepEqual(processCommand(commandTest), resultObject);
@@ -34,6 +35,7 @@ test('command get config without args', t => {
     command: 'cp',
     args: [],
     options: {},
+    commands: [],
   };
 
   t.deepEqual(processCommand(commandTest), resultObject);
@@ -49,6 +51,7 @@ test('command get config with options', t => {
     options: {
       someParams: true
     },
+    commands: [],
   };
 
   t.deepEqual(processCommand(commandTest), resultObject);
@@ -64,6 +67,7 @@ test('command get config with options-value', t => {
     options: {
       someParams: '123'
     },
+    commands: [],
   };
 
   t.deepEqual(processCommand(commandTest), resultObject);
@@ -84,11 +88,13 @@ test('process file command', t => {
         command: 'cp',
         args: ['/test3', '/test4'],
         options: {},
+        commands: [],
       },
       {
         command: 'cp',
         args: ['/test4', '/test5'],
         options: {},
+        commands: [],
       },
       {
         command: 'mv',
@@ -96,6 +102,7 @@ test('process file command', t => {
         options: {
           force: true,
         },
+        commands: [],
       },
     ];
 
@@ -166,6 +173,83 @@ test('run file command', t => {
 
 test.after('run file command', () => {
   fs.unlink(TEST_RUN_FILE_COMMAND);
+});
+
+const TEST_PROCESS_FILE_COMMAND_WITH_SUB_COMMAND = './temp/file-process-command-with-sub-command/.workflow';
+
+test.before('process file command with sub command', () => {
+  return new Promise(resolve => {
+    writeFile(TEST_PROCESS_FILE_COMMAND_WITH_SUB_COMMAND, `
+      cp /test3 /test4\n
+      cp /test4 /test5\n
+      mv /test7 /test8 --force\n
+      watch /test10 {\n
+        mkdir /test8\n
+      }\n
+      watch /test11 --force {\n
+        mkdir /test9 --force\n
+      }\n
+    `, resolve);
+  });
+});
+
+test('process file command with sub command', t => {
+  return processCommandFile(TEST_PROCESS_FILE_COMMAND_WITH_SUB_COMMAND).then(actions => {
+    const resultObject = [
+      {
+        command: 'cp',
+        args: ['/test3', '/test4'],
+        options: {},
+        commands: [],
+      },
+      {
+        command: 'cp',
+        args: ['/test4', '/test5'],
+        options: {},
+        commands: [],
+      },
+      {
+        command: 'mv',
+        args: ['/test7', '/test8'],
+        options: {
+          force: true,
+        },
+        commands: [],
+      },
+      {
+        command: 'watch',
+        args: ['/test10'],
+        options: {},
+        commands: [{
+          command: 'mkdir',
+          args: ['/test8'],
+          options: {},
+          commands: [],
+        }]
+      },
+      {
+        command: 'watch',
+        args: ['/test11'],
+        options: {
+          force: true,
+        },
+        commands: [{
+          command: 'mkdir',
+          args: ['/test9'],
+          options: {
+            force: true,
+          },
+          commands: [],
+        }]
+      },
+    ];
+
+    t.deepEqual(actions, resultObject);
+  });
+});
+
+test.after('process file command with sub command', () => {
+  fs.unlink(TEST_PROCESS_FILE_COMMAND_WITH_SUB_COMMAND);
 });
 
 

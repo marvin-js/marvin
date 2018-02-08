@@ -1,6 +1,13 @@
 import idx from 'idx';
 
 import { readFile } from './file';
+import { isCommandWithSubCommand, getNameWithSubCommand, findAllCommand } from './regex';
+
+export function pure (commands = []) {
+  if (commands === null) return [];
+
+  return commands.map(command => command.trim()).filter(command => command !== '');
+};
 
 function isOption (value) {
   return value.indexOf('--') !== -1
@@ -19,7 +26,16 @@ function setOption (option, callback = f => f) {
 
 export function processCommand (command) {
 
+  let subCommands;
+
+  if (isCommandWithSubCommand.test(command)) {
+    subCommands = pure((idx(command, _ => _.match(isCommandWithSubCommand)[0]) || '').match(findAllCommand));
+    command = idx(command, _ => _.match(getNameWithSubCommand)[0]);
+  }
+
   if (!command) return;
+
+  const subCommandsProcessed = subCommands ? subCommands.map(subCommand => processCommand(subCommand)) : [];
 
   command = command.split(' ') || [];
 
@@ -41,8 +57,9 @@ export function processCommand (command) {
 
   return {
     command: commandMain,
-    args: config.args,
+    args: pure(config.args),
     options: config.options,
+    commands: subCommandsProcessed,
   };
 };
 
@@ -51,14 +68,11 @@ export function processCommandFile (fileToExecute) {
 
     const actions = [];
 
-    readFile(fileToExecute, {
-      eachLine: line => {
-        actions.push(processCommand(line));
-      },
-      onClose: () => {
+    readFile(fileToExecute)
+      .then(content => {
+        pure(content.match(findAllCommand)).forEach(command => actions.push(processCommand(command)));
         resolve(actions);
-      },
-    });
+      });
   });
 };
 
