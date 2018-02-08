@@ -1,6 +1,5 @@
 import test from 'ava';
 import fs from 'fs';
-import sinon from 'sinon';
 
 import { writeFile } from '../utils-test/file';
 import { readFile } from './file';
@@ -15,19 +14,11 @@ test.before('read line-by-line', () => {
 
 test('read line-by-line', t => {
   return new Promise((resolve, reject) => {
-
-    const eachLineSpy = sinon.spy();
-
-    readFile(TEMP_FILE_LINE_BY_LINE, {
-      eachLine: eachLineSpy,
-    });
-
-    setTimeout(() => {
-      t.is(eachLineSpy.callCount, 2);
-      t.true(eachLineSpy.firstCall.calledWith('cp /test3 /teste4'));
-      t.true(eachLineSpy.secondCall.calledWith('cp /test4 /teste5'));
-      resolve();
-    }, 500);
+    readFile(TEMP_FILE_LINE_BY_LINE)
+      .then(content => {
+        t.is(content, `cp /test3 /teste4\ncp /test4 /teste5`);
+        resolve();
+      });
   });
 });
 
