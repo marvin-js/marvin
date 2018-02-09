@@ -1,10 +1,10 @@
-export const findAllCommand = /^(\s+?(\$[a-z_0-9]+)(?:\s=\s))?([a-z\s0-9\/\-]+?)({[a-z\n\s0-9\/\-]*})?(\n|$)+?/gmi;
+export const findAllCommand = /^(\s+?(\$[a-z_0-9]+)(?:\s=\s))?([a-z\s0-9\/\-_=]+?)(\n|$)+?/gmi;
 
-export const isCommandWithSubCommand = /{([a-z\n\s0-9\/\-]*)}/mi;
+export const isCommandWithSubCommand = /{([a-z\n\s0-9\/\-\$=_{}]*)}/mi;
 
-export const getSubCommand = /{([a-z\n\s0-9\/\-]*)}/gmi;
+export const getSubCommand = /{([a-z\n\s0-9\/\-\$=_{}]*)}/mi;
 
-export const replaceSubCommand = /{[a-z\n\s0-9\/\-]*}/gmi;
+export const replaceSubCommand = /{[a-z\n\s0-9\/\-\$=_{}]*}/gmi;
 
 export const getNameWithSubCommand = /(?:\s+?(\$[a-z_0-9]+)(?:\s=\s))?([a-z\s0-9\/\-]*)/gmi;
  
