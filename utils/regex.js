@@ -1,4 +1,4 @@
-export const findAllCommand = /^(\s+?(\$[a-z_0-9]+)(?:\s=\s))?([a-z\s0-9\/\-_=]+?)(\n|$)+?/gmi;
+export const findAllCommand = /^(\s*?(\$[a-z_0-9]+)(?:\s=\s))?([a-z\s0-9\/\-_=]+?)(\n|$)+?/gmi;
 
 export const isCommandWithSubCommand = /{([a-z\n\s0-9\/\-\$=_{}]*)}/mi;
 
