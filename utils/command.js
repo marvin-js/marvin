@@ -62,7 +62,7 @@ export function processCommand (command) {
 
   if (isCommandWithSubCommand.test(command)) {
     subCommands = pure(findAllCommand(getSubCommand.exec(command)[1]));
-    
+
     command = command.replace(replaceSubCommand, '');
   }
 
@@ -109,17 +109,23 @@ export async function processCommandFile (fileToExecute) {
   return actions;
 };
 
-export const generateCommand = (actions = [], libExternal = {}) => () => {
+export const generateCommand = (actions = [], opts = {}) => () => {
   actions.map(async action => {
 
     const executeSubCommands = () => {
       if (action.commands.length > 0) {
-        generateCommand(action.commands, libExternal)();
+        generateCommand(action.commands, opts)();
+      }
+    };
+
+    const setResultVariables = (result, action, store) => {
+      if (action.setVariables && action.setVariables.length > 0) {
+        store.setStore(action.setVariables[0], result);
       }
     };
 
     const executeAction = () => {
-      const promise = libExternal[action.command].call({}, action.options, ...action.args);
+      const promise = opts.libExternal[action.command].call({}, action.options, ...action.args);
 
       if (!promise) return Promise.resolve();
       
@@ -132,11 +138,13 @@ export const generateCommand = (actions = [], libExternal = {}) => () => {
 
     if (action.options.async) {
       executeAction().then(result => {
+        setResultVariables(result, action, opts.store);
         executeSubCommands();
       });
     } else {
       const result = await executeAction();
-      executeSubCommands();
+      setResultVariables(result, action, opts.store);
+      await executeSubCommands();
     }
   });
 
@@ -145,7 +153,16 @@ export const generateCommand = (actions = [], libExternal = {}) => () => {
 
 export function runFile (fileToExecute, libExternal) {
   return processCommandFile(fileToExecute).then(actions => {
-    const execute = generateCommand(actions, libExternal);
+    let store = {};
+    const execute = generateCommand(actions, {
+      libExternal,
+      store: {
+        setStore: (name, value) => {
+          store[name] = value;
+        },
+        getStore: (name) => store[name],
+      },
+    });
     return execute();
   });
 };

@@ -148,17 +148,19 @@ test.before('process file command generated', () => {
 });
 
 test('process file command generated', t => {
-  return processCommandFile(TEST_FILE_COMMAND).then(actions => {
+  return processCommandFile(TEST_FILE_COMMAND_GENERATED).then(actions => {
 
     const cp = sinon.spy();
     const mv = sinon.spy();
 
-    const libExternals = {
+    const libExternal = {
       cp,
       mv,
     };
 
-    const execute = generateCommand(actions, libExternals);
+    const execute = generateCommand(actions, {
+      libExternal
+    });
 
     return execute().then(() => {
       t.true(cp.firstCall.calledWith({}, '/test3', '/test4'));
@@ -171,6 +173,65 @@ test('process file command generated', t => {
 test.after('process file command generated', () => {
   fs.unlink(TEST_FILE_COMMAND_GENERATED);
 });
+
+
+const TEST_FILE_COMMAND_GENERATED_RESULT = './temp/file-command-generated-result/.workflow';
+
+test.before('process file command generated with result', () => {
+  return new Promise(resolve => {
+    writeFile(TEST_FILE_COMMAND_GENERATED_RESULT, `
+      $result = cp /test3 /test4
+      cp /test4 /test5
+      mv /test7 /test8 --force
+    `, resolve);
+  });
+});
+
+test('process file command generated with result', t => {
+  return processCommandFile(TEST_FILE_COMMAND_GENERATED_RESULT).then(actions => {
+
+    let store = {};
+
+    const object = { 
+      method: () => 'teste',
+      setStore: (name, value) => store[name] = value,
+      getStore: (name) => store[name],
+    };
+
+    const cp = sinon.spy(object, 'method');
+    const mv = sinon.spy();
+    
+    const setStore = sinon.spy(object, 'setStore');
+    const getStore = sinon.spy(object, 'getStore');
+
+    const libExternal = {
+      cp,
+      mv,
+    };
+
+    const execute = generateCommand(actions, {
+      libExternal,
+      store: {
+       setStore,
+       getStore, 
+      },
+    });
+
+    return execute().then(() => {
+      t.true(cp.firstCall.returned('teste'));
+      t.true(setStore.calledWith('$result', 'teste'));
+      t.is(store.$result, 'teste');
+      t.true(cp.firstCall.calledWith({}, '/test3', '/test4'));
+      t.true(cp.secondCall.calledWith({}, '/test4', '/test5'));
+      t.true(mv.calledWith({force: true}, '/test7', '/test8'));
+    });
+  });
+});
+
+test.after('process file command generated with result', () => {
+  fs.unlink(TEST_FILE_COMMAND_GENERATED_RESULT);
+});
+
 
 const TEST_RUN_FILE_COMMAND = './temp/file-run-command/.workflow';
 
