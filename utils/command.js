@@ -1,7 +1,7 @@
 import idx from 'idx';
 
 import { readFile } from './file';
-import { isCommandWithSubCommand, getNameWithSubCommand, findAllCommand } from './regex';
+import { isCommandWithSubCommand, getNameWithSubCommand, findAllCommand, findVariables, replaceVariables, getVariables, getSubCommand, replaceSubCommand } from './regex';
 
 export function pure (commands = []) {
   if (commands === null) return [];
@@ -27,15 +27,21 @@ function setOption (option, callback = f => f) {
 export function processCommand (command) {
 
   let subCommands;
+  let setVariables;
 
   if (isCommandWithSubCommand.test(command)) {
-    subCommands = pure((idx(command, _ => _.match(isCommandWithSubCommand)[0]) || '').match(findAllCommand));
-    command = idx(command, _ => _.match(getNameWithSubCommand)[0]);
+    subCommands = pure((idx(command, _ => _.match(getSubCommand)[0]) || '').match(findAllCommand));
+    command = command.replace(replaceSubCommand, '');
   }
 
   if (!command) return;
 
   const subCommandsProcessed = subCommands ? subCommands.map(subCommand => processCommand(subCommand)) : [];
+
+  if (findVariables.test(command)) {
+    setVariables = [getVariables.exec(command)[1]];
+    command = command.replace(replaceVariables, '');
+  }
 
   command = command.split(' ') || [];
 
@@ -59,6 +65,7 @@ export function processCommand (command) {
     command: commandMain,
     args: pure(config.args),
     options: config.options,
+    setVariables,
     commands: subCommandsProcessed,
   };
 };

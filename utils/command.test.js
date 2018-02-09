@@ -22,6 +22,7 @@ test('command get config', t => {
     args: ['/test2', '/test3'],
     options: {},
     commands: [],
+    setVariables: undefined,
   };
 
   t.deepEqual(processCommand(commandTest), resultObject);
@@ -36,6 +37,7 @@ test('command get config without args', t => {
     args: [],
     options: {},
     commands: [],
+    setVariables: undefined,
   };
 
   t.deepEqual(processCommand(commandTest), resultObject);
@@ -52,6 +54,7 @@ test('command get config with options', t => {
       someParams: true
     },
     commands: [],
+    setVariables: undefined,
   };
 
   t.deepEqual(processCommand(commandTest), resultObject);
@@ -68,6 +71,7 @@ test('command get config with options-value', t => {
       someParams: '123'
     },
     commands: [],
+    setVariables: undefined,
   };
 
   t.deepEqual(processCommand(commandTest), resultObject);
@@ -89,12 +93,14 @@ test('process file command', t => {
         args: ['/test3', '/test4'],
         options: {},
         commands: [],
+        setVariables: undefined,
       },
       {
         command: 'cp',
         args: ['/test4', '/test5'],
         options: {},
         commands: [],
+        setVariables: undefined,
       },
       {
         command: 'mv',
@@ -103,6 +109,7 @@ test('process file command', t => {
           force: true,
         },
         commands: [],
+        setVariables: undefined,
       },
     ];
 
@@ -201,12 +208,14 @@ test('process file command with sub command', t => {
         args: ['/test3', '/test4'],
         options: {},
         commands: [],
+        setVariables: undefined,
       },
       {
         command: 'cp',
         args: ['/test4', '/test5'],
         options: {},
         commands: [],
+        setVariables: undefined,
       },
       {
         command: 'mv',
@@ -215,6 +224,7 @@ test('process file command with sub command', t => {
           force: true,
         },
         commands: [],
+        setVariables: undefined,
       },
       {
         command: 'watch',
@@ -225,7 +235,9 @@ test('process file command with sub command', t => {
           args: ['/test8'],
           options: {},
           commands: [],
-        }]
+          setVariables: undefined,
+        }],
+        setVariables: undefined,
       },
       {
         command: 'watch',
@@ -240,7 +252,9 @@ test('process file command with sub command', t => {
             force: true,
           },
           commands: [],
-        }]
+          setVariables: undefined,
+        }],
+        setVariables: undefined
       },
     ];
 
@@ -250,6 +264,74 @@ test('process file command with sub command', t => {
 
 test.after('process file command with sub command', () => {
   fs.unlink(TEST_PROCESS_FILE_COMMAND_WITH_SUB_COMMAND);
+});
+
+const TEST_PROCESS_FILE_COMMAND_WITH_SET_VARIABLES= './temp/file-process-command-with-set-variables/.workflow';
+
+test.before('process file command with set variables', () => {
+  return new Promise(resolve => {
+    writeFile(TEST_PROCESS_FILE_COMMAND_WITH_SET_VARIABLES, `
+      $result = cp /test3 /test4
+    `, resolve);
+  });
+});
+
+test('process file command with set variables', t => {
+  return processCommandFile(TEST_PROCESS_FILE_COMMAND_WITH_SET_VARIABLES).then(actions => {
+    const resultObject = [
+      {
+        command: 'cp',
+        args: ['/test3', '/test4'],
+        options: {},
+        setVariables: ['$result'],
+        commands: [],
+      },
+    ];
+
+    t.deepEqual(actions, resultObject);
+  });
+});
+
+test.after('process file command with set variables', () => {
+  fs.unlink(TEST_PROCESS_FILE_COMMAND_WITH_SET_VARIABLES);
+});
+
+const TEST_PROCESS_FILE_COMMAND_WITH_SET_VARIABLES_AND_SUB_COMMAND= './temp/file-process-command-with-set-variables-and-sub-command/.workflow';
+
+test.before('process file command with set variables and sub command', () => {
+  return new Promise(resolve => {
+    writeFile(TEST_PROCESS_FILE_COMMAND_WITH_SET_VARIABLES_AND_SUB_COMMAND, `
+      $result = rm /test3 {
+        mkdir /test5
+      }
+    `, resolve);
+  });
+});
+
+test('process file command with set variables and sub command', t => {
+  return processCommandFile(TEST_PROCESS_FILE_COMMAND_WITH_SET_VARIABLES_AND_SUB_COMMAND).then(actions => {
+    const resultObject = [
+      {
+        command: 'rm',
+        args: ['/test3'],
+        options: {},
+        setVariables: ['$result'],
+        commands: [{
+          command: 'mkdir',
+          args: ['/test5'],
+          options: {},
+          setVariables: undefined,
+          commands: [],
+        }],
+      },
+    ];
+
+    t.deepEqual(actions, resultObject);
+  });
+});
+
+test.after('process file command with set variables and sub command', () => {
+  fs.unlink(TEST_PROCESS_FILE_COMMAND_WITH_SET_VARIABLES_AND_SUB_COMMAND);
 });
 
 
