@@ -5,6 +5,7 @@ import sinon from 'sinon';
 import { writeFile } from '../utils-test/file';
 
 import { processCommand, processCommandFile, generateCommand, runFile } from './command';
+import { setTimeout } from 'timers';
 
 test('command empty should return undefined', t => {
   t.is(processCommand(), undefined);
@@ -232,6 +233,135 @@ test.after('process file command generated with result', () => {
   fs.unlink(TEST_FILE_COMMAND_GENERATED_RESULT);
 });
 
+const TEST_FILE_COMMAND_GENERATED_RESULT_2 = './temp/file-command-generated-result-2/.workflow';
+
+test.before('process file command generated with result 2', () => {
+  return new Promise(resolve => {
+    writeFile(TEST_FILE_COMMAND_GENERATED_RESULT_2, `
+      $result = cp /test3 /test4
+      cp /test4 /test5 --opt=$result
+      mv /test7 $result --force
+    `, resolve);
+  });
+});
+
+test('process file command generated with result 2', t => {
+  return processCommandFile(TEST_FILE_COMMAND_GENERATED_RESULT_2).then(actions => {
+
+    let store = {};
+
+    const object = { 
+      method: (opts, orig, dest) => {
+        return dest
+      },
+      setStore: (name, value) => store[name] = value,
+      getStore: (name) => store[name],
+    };
+
+    const cp = sinon.spy(object, 'method');
+    const mv = sinon.spy();
+    
+    const setStore = sinon.spy(object, 'setStore');
+    const getStore = sinon.spy(object, 'getStore');
+
+    const libExternal = {
+      cp,
+      mv,
+    };
+
+    const execute = generateCommand(actions, {
+      libExternal,
+      store: {
+       setStore,
+       getStore, 
+      },
+    });
+
+    return execute().then(() => {
+      t.true(cp.firstCall.returned('/test4'));
+      t.true(cp.secondCall.returned('/test5'))
+      t.true(cp.secondCall.calledWith({opt: '/test4'}, '/test4', '/test5'));
+      t.true(mv.calledWith({force: true}, '/test7', '/test4'));
+    });
+  });
+});
+
+test.after('process file command generated with result 2', () => {
+  fs.unlink(TEST_FILE_COMMAND_GENERATED_RESULT_2);
+});
+
+const TEST_FILE_COMMAND_GENERATED_RESULT_3 = './temp/file-command-generated-result-3/.workflow';
+
+test.before('process file command generated with result 3', () => {
+  return new Promise(resolve => {
+    writeFile(TEST_FILE_COMMAND_GENERATED_RESULT_3, `
+      $fetch = fetch {
+        $otherFunction = otherFunction $fetch {
+          otherFunctionSub $otherFunction
+        }
+      }
+      $result = cp /test3 /test4
+      cp /test4 /test5 --opt=$result
+      mv /test7 $result --force
+    `, resolve);
+  });
+});
+
+test('process file command generated with result 3', t => {
+  return processCommandFile(TEST_FILE_COMMAND_GENERATED_RESULT_3).then(actions => {
+
+    let store = {};
+
+    const object = { 
+      method: (opts, orig, dest) => {
+        return dest
+      },
+      setStore: (name, value) => store[name] = value,
+      getStore: (name) => store[name],
+      fetch: () => 'fetch_test',
+      otherFunction: () => 'otherFunction_test',
+    };
+
+    const cp = sinon.spy(object, 'method');
+    const mv = sinon.spy();
+    const fetch = sinon.spy(object, 'fetch');
+    const otherFunction = sinon.spy(object, 'otherFunction');
+    const otherFunctionSub = sinon.spy();
+    
+    const setStore = sinon.spy(object, 'setStore');
+    const getStore = sinon.spy(object, 'getStore');
+
+    const libExternal = {
+      cp,
+      mv,
+      fetch,
+      otherFunction,
+      otherFunctionSub,
+    };
+
+    const execute = generateCommand(actions, {
+      libExternal,
+      store: {
+       setStore,
+       getStore, 
+      },
+    });
+
+    return execute().then(() => {
+      t.true(cp.firstCall.returned('/test4'));
+      t.true(cp.secondCall.returned('/test5'))
+      t.true(cp.secondCall.calledWith({opt: '/test4'}, '/test4', '/test5'));
+      t.true(mv.calledWith({force: true}, '/test7', '/test4'));
+      t.true(fetch.returned('fetch_test'));
+      t.true(otherFunction.calledWith({}, 'fetch_test'));
+      t.true(otherFunctionSub.calledWith({}, 'otherFunction_test') )
+    });
+  });
+});
+
+test.after('process file command generated with result 3', () => {
+  fs.unlink(TEST_FILE_COMMAND_GENERATED_RESULT_3);
+});
 
 const TEST_RUN_FILE_COMMAND = './temp/file-run-command/.workflow';
 
