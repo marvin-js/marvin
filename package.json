@@ -10,6 +10,7 @@
   "dependencies": {
     "commander": "^2.13.0",
     "idx": "^2.2.0",
+    "uuid": "^3.2.1",
     "xregexp": "^4.0.0"
   },
   "devDependencies": {
