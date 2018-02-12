@@ -4,7 +4,7 @@ import sinon from 'sinon';
 
 import { writeFile } from '../utils-test/file';
 
-import { processCommand, processCommandFile, generateCommand, runFile } from './command';
+import { processCommand, processCommandFile, generateCommand, runFile, wrapperInstanceGenerator } from './command';
 import { setTimeout } from 'timers';
 
 test('command empty should return undefined', t => {
@@ -611,4 +611,86 @@ test.after('process file command with set variables and sub command', () => {
   fs.unlink(TEST_PROCESS_FILE_COMMAND_WITH_SET_VARIABLES_AND_SUB_COMMAND);
 });
 
+const TEST_FILE_COMMAND_GENERATED_RESULT_WITH_ASYNC = './temp/file-command-generated-result-with-async/.workflow';
+
+test.before('process file command generated with async', () => {
+  return new Promise(resolve => {
+    writeFile(TEST_FILE_COMMAND_GENERATED_RESULT_WITH_ASYNC, `
+      $resultFetch = fetch http://teste.com.br --async {
+        touch /test/result $resultFetch
+        $resultFetch4 = fetch2 http://teste5.com.br --async {
+          cp /teste $resultFetch4
+        }
+      }
+
+      $resultFetch2 = fetch2 http://teste.com.br --async {
+        cp /test/result $resultFetch2 $resultFetch
+        $resultFetch3 = fetch http://teste2.com.br --async {
+          touch /teste $resultFetch3
+        }
+      }
+    `, resolve);
+  });
+});
+
+test('process file command generated with async', t => {
+  return processCommandFile(TEST_FILE_COMMAND_GENERATED_RESULT_WITH_ASYNC).then(actions => {
+
+    let store = {};
+
+    const object = { 
+      setStore: (name, value) => store[name] = value,
+      getStore: (name) => store[name],
+      fetch: () => new Promise(resolve => {
+        setTimeout(() => {
+          resolve('fetch_test');
+        }, 1000);
+      }),
+      fetch2: () => new Promise(resolve => {
+        setTimeout(() => {
+          resolve('fetch_test2');
+        }, 500);
+      }),
+    };
+
+    const fetch = sinon.spy(object, 'fetch');
+    const fetch2 = sinon.spy(object, 'fetch2');
+    const touch = sinon.spy();
+    const cp = sinon.spy();
+    
+    const setStore = sinon.spy(object, 'setStore');
+    const getStore = sinon.spy(object, 'getStore');
+
+    const libExternal = {
+      fetch,
+      fetch2,
+      touch,
+      cp,
+    };
+
+    const execute = wrapperInstanceGenerator(generateCommand(actions, {
+      libExternal,
+      store: {
+       setStore,
+       getStore, 
+      },
+    }));
+
+    return execute().then(() => {
+      t.false(touch.threw());
+      t.false(cp.threw());
+      t.true(touch.firstCall.calledWith({}, '/test/result', 'fetch_test'));
+      t.true(cp.firstCall.calledWith({}, '/test/result', 'fetch_test2', undefined));
+      t.false(touch.firstCall.calledBefore(cp.firstCall));
+      t.true(cp.firstCall.calledBefore(touch.firstCall));
+      t.false(cp.secondCall.calledBefore(touch.secondCall));
+      t.true(touch.secondCall.calledBefore(cp.secondCall));
+      t.false(touch.secondCall.calledAfter(cp.secondCall));
+    });
+  });
+});
+
+test.after('process file command generated with async', () => {
+  fs.unlink(TEST_FILE_COMMAND_GENERATED_RESULT_WITH_ASYNC);
+});
 

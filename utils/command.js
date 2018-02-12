@@ -2,6 +2,7 @@ import idx from 'idx';
 import XRegExp from 'xregexp';
 
 import { readFile } from './file';
+import { instance as pubSub, REGISTER_ASYNC, FINISH_ASYNC, ALL_PROCESS_FINISH, VERIFY_ALL_PROCESS } from './pubsub';
 import { 
   isCommandWithSubCommand, 
   getNameWithSubCommand, 
@@ -153,24 +154,48 @@ const executeSubCommands = (action, opts) => {
 
 const executeAction = (action, opts) => {
 
+  let id;
+  let promiseWrapper = Promise.resolve();
+
   if (!action) return Promise.resolve();
 
-  const resultVariables = getResultVariables(action.options, action.args, opts.store);
-
-  const result = opts.libExternal[action.command].call({}, resultVariables.options, ...resultVariables.args);
-
-  let returnAction = !result ? Promise.resolve() : (result.then ? result : Promise.resolve(result));
-
-  returnAction = returnAction.then(result => {
-    setResultVariables(result, action, opts.store);
-    return executeSubCommands(action, opts);
-  });
-
   if (action.options.async) {
-    return Promise.resolve();
+    promiseWrapper = promiseWrapper.then(result => {
+      return pubSub.publish(REGISTER_ASYNC).then(generatedID => {
+        id = generatedID;
+        return result;
+      });
+    });
   }
 
-  return returnAction;
+  promiseWrapper.then(() => {
+
+    const resultVariables = getResultVariables(action.options, action.args, opts.store);
+
+    const result = opts.libExternal[action.command].call({}, resultVariables.options, ...resultVariables.args);
+  
+    let returnAction = !result ? Promise.resolve() : (result.then ? result : Promise.resolve(result));
+  
+    returnAction = returnAction.then(result => {
+      setResultVariables(result, action, opts.store);
+      return executeSubCommands(action, opts);
+    });
+
+    if (action.options.async) {
+
+
+      returnAction = returnAction.then(() => {
+        pubSub.publish(FINISH_ASYNC, id);
+      });
+
+      return Promise.resolve();
+    }
+
+    return returnAction
+
+  });
+
+  return promiseWrapper;
 };
 
 const getActionsInGenerator = function*(actions, opts) {
@@ -192,10 +217,29 @@ export const generateCommand = (actions = [], opts = {}) => () => {
   return promise;
 };
 
+export const wrapperInstanceGenerator = (callback) => () => {
+
+  if (!callback) return Promise.resolve();
+
+  const promise = callback();
+
+  if (!promise.then) return Promise.resolve(promise);
+
+  return promise.then(() => {
+    return new Promise(resolve => {
+      pubSub.on(ALL_PROCESS_FINISH, () => {
+        resolve()
+      });
+
+      pubSub.publish(VERIFY_ALL_PROCESS);
+    });
+  });
+};
+
 export function runFile (fileToExecute, libExternal) {
   return processCommandFile(fileToExecute).then(actions => {
     let store = {};
-    const execute = generateCommand(actions, {
+    const execute = wrapperInstanceGenerator(generateCommand(actions, {
       libExternal,
       store: {
         setStore: (name, value) => {
@@ -203,7 +247,7 @@ export function runFile (fileToExecute, libExternal) {
         },
         getStore: (name) => store[name],
       },
-    });
+    }));
     return execute();
   });
 };
