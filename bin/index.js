@@ -5,7 +5,7 @@ import program from 'commander';
 import idx from 'idx';
 
 import packageJSON from '../package.json';
-import { runFile } from '../utils/command';
+import { runFile } from '../lib/command';
 import * as libExternals from '../commands';
 
 program

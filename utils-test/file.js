@@ -6,6 +6,7 @@ export function writeFile (path, contents, cb) {
   mkdirp(dirname(path), function (err) {
     if (err) return cb(err);
 
-    fs.writeFile(path, contents, cb);
+    fs.writeFileSync(path, contents, 'utf8');
+    cb && cb();
   });
 }
