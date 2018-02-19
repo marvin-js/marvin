@@ -1,3 +1,13 @@
 export { default as cp } from './copy';
 export { default as mv } from './move';
 export { default as log } from './log';
+export { default as erro } from './erro';
+export { default as warn } from './warn';
+export { default as confirm } from './confirm';
+export { default as checkbox } from './checkbox';
+export { default as choose } from './choose';
+export { default as input } from './input';
+export { default as notify } from './notify';
+export { default as each } from './each';
+export { default as append } from './append';
+export { default as capitalize } from './capitalize';
