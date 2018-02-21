@@ -1,31 +1,24 @@
 import test from 'ava';
 import fs from 'fs';
 
-import { writeFile } from '../utils-test/file';
+import { writeFile, readFile } from '../utils-test/file';
 import copy from './copy';
 
-const TEMP_COMMAND_FOLDER = './temp/command-copy'
-const TEMP_COMMAND_COPY_ORIGIN = `${TEMP_COMMAND_FOLDER}/test5`;
-const TEMP_COMMAND_COPY_DESTIN = `${TEMP_COMMAND_FOLDER}/test4`;
+const TEST_FILE_ORIGIN = './temp/command-copy/teste.txt';
+const TEST_FILE_DEST = './temp/command-copy/teste.copy.txt';
 
-test.before('copy', () => {
-  return new Promise(resolve => {
-    writeFile(TEMP_COMMAND_COPY_ORIGIN, `hello world`, resolve);
+test.before('command append', () => writeFile(TEST_FILE_ORIGIN, `teste \nteste2 \n`));
+
+test('command append', t => {
+  return copy({}, TEST_FILE_ORIGIN, TEST_FILE_DEST).then(() => {
+
+    return readFile(TEST_FILE_DEST).then(content => {
+      t.is(content, 'teste \nteste2 \n');
+    });
   });
 });
 
-test('copy', t => {
-  return new Promise(resolve => {
-    copy({}, TEMP_COMMAND_COPY_ORIGIN, TEMP_COMMAND_COPY_DESTIN);
-
-    setTimeout(() => {
-      t.true(fs.existsSync(TEMP_COMMAND_COPY_DESTIN));
-      resolve();
-    }, 100);
-  });
-});
-
-test.after('copy', () => {
-  fs.unlink(TEMP_COMMAND_COPY_ORIGIN);
-  fs.unlink(TEMP_COMMAND_COPY_DESTIN);
+test.after('command append', () => {
+  fs.unlink(TEST_FILE_ORIGIN);
+  fs.unlink(TEST_FILE_DEST);
 });
