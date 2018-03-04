@@ -1,5 +1,5 @@
 export { default as copy } from './copy';
-export { default as mv } from './move';
+export { default as move } from './move';
 export { default as log } from './log';
 export { default as erro } from './erro';
 export { default as warn } from './warn';

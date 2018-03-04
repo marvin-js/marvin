@@ -35,8 +35,8 @@ npm install marvin-cli --global
 ```
 // .marvin on project folder
 
-cp /path/oldFile /path/newFile
-mv /path/earth /path/mars
+copy /path/oldFile /path/newFile
+move /path/earth /path/mars
 ```
 
 On terminal:
