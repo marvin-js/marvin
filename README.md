@@ -6,6 +6,8 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/3oa2kqlddu42ife5?svg=true)](https://ci.appveyor.com/project/alexandref93/marvin)
 [![Coverage Status](https://coveralls.io/repos/github/alexandref93/marvin/badge.svg?branch=master)](https://coveralls.io/github/alexandref93/marvin?branch=master)
 
+**The project is still in alpha phase.**
+
 # Contents
 
 - [Install](#install)
