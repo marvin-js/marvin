@@ -13,6 +13,7 @@
 - [Install](#install)
 - [Usage](#usage)
 - [CLI Usage](#cli)
+- [Roadmap](#roadmap)
 
 ## Install
 
@@ -75,5 +76,13 @@ $ marvin --help
 
           marvin
 ```
+
+## Roadmap
+
+- Document all possible commands
+- Allow development plugin
+- Allow more verbose logs
+- Add more commands like: fetch, template, ftp, git, etc.
+
 
 MIT © [Carlos Alexandre Fuechter](https://github.com/alexandref93)
