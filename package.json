@@ -5,7 +5,7 @@
   "author": "Carlos Alexandre Fuechter <fuechter.carlos@gmail.com>",
   "license": "MIT",
   "bin": {
-    "workflow": "./bin/index.js"
+    "workflow": "./dist/bin/index.js"
   },
   "dependencies": {
     "chalk": "^2.3.1",
@@ -47,6 +47,8 @@
   },
   "scripts": {
     "start": "babel-node bin/index.js",
+    "build": "babel src --out-dir dist",
+    "prepublish": "npm run build",
     "test": "nyc ava",
     "report": "nyc report --reporter=html",
     "coverage": "npm test && nyc report --reporter=text-lcov | coveralls",

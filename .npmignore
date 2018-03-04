@@ -1,0 +1,6 @@
+src
+coverage
+docs
+.babelrc
+.editorconfig
+.flowconfig
