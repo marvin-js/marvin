@@ -1,6 +1,6 @@
 {
-  "name": "workflow",
-  "version": "1.0.0",
+  "name": "workflow-cli",
+  "version": "1.0.0-alpha-1",
   "main": "index.js",
   "author": "Carlos Alexandre Fuechter <fuechter.carlos@gmail.com>",
   "license": "MIT",
