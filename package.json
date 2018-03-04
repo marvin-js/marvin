@@ -30,6 +30,7 @@
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-flow": "^6.23.0",
+    "coveralls": "^3.0.0",
     "flow-bin": "^0.66.0",
     "import": "^0.0.6",
     "jsdoc-parse": "^3.0.1",
@@ -48,6 +49,7 @@
     "start": "babel-node bin/index.js",
     "test": "nyc ava",
     "report": "nyc report --reporter=html",
+    "coverage": "npm test && nyc report --reporter=text-lcov | coveralls",
     "flow": "flow"
   }
 }

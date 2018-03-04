@@ -4,6 +4,7 @@
 
 [![Build Status: Linux](https://travis-ci.org/alexandref93/workflow.svg?branch=master)](https://travis-ci.org/alexandref93/workflow)
 [![Build status](https://ci.appveyor.com/api/projects/status/3oa2kqlddu42ife5?svg=true)](https://ci.appveyor.com/project/alexandref93/workflow)
+[![Coverage Status](https://coveralls.io/repos/github/alexandref93/workflow/badge.svg?branch=master)](https://coveralls.io/github/alexandref93/workflow?branch=master)
 
 Create a workflow with a simple file.
 
