@@ -1,0 +1,4 @@
+download https://unsplash.com/photos/U2uKrI4lci8/download newWallpaper.jpg {
+  log download finished
+  wallpaper newWallpaper.jpg
+}
