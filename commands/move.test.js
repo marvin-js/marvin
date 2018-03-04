@@ -8,11 +8,7 @@ const TEMP_COMMAND_FOLDER = './temp/command-move'
 const TEMP_COMMAND_MOVE_ORIGIN = `${TEMP_COMMAND_FOLDER}/test5`;
 const TEMP_COMMAND_MOVE_DESTIN = `${TEMP_COMMAND_FOLDER}/test4`;
 
-test.before('move', () => {
-  return new Promise(resolve => {
-    writeFile(TEMP_COMMAND_MOVE_ORIGIN, `hello world`, resolve);
-  });
-});
+test.before('move', () => writeFile(TEMP_COMMAND_MOVE_ORIGIN, `hello world`));
 
 test('move', t => {
   return new Promise(resolve => {
