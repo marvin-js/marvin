@@ -1,11 +1,11 @@
 {
-  "name": "workflow-script",
+  "name": "marvin-cli",
   "version": "1.0.0-alpha-1",
   "main": "index.js",
   "author": "Carlos Alexandre Fuechter <fuechter.carlos@gmail.com>",
   "license": "MIT",
   "bin": {
-    "workflow": "./dist/bin/index.js"
+    "marvin": "./dist/bin/index.js"
   },
   "dependencies": {
     "chalk": "^2.3.1",
@@ -46,7 +46,6 @@
     ]
   },
   "scripts": {
-    "start": "babel-node bin/index.js",
     "build": "babel src --out-dir dist",
     "prepublish": "npm run build",
     "test": "nyc ava",

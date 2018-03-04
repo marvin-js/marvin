@@ -12,17 +12,16 @@ import * as libExternals from '../commands';
 
 program
   .version(packageJSON.version)
-  .command('workflow')
+  .command('marvin')
   .usage('[file ...] [options]')
   .description('Create a complex workflow in a simpler way')
-  .option('--silent', 'silent log')
   .on('--help', () => {
     console.log();
     console.log();
-    console.log('  How use the workflow, step-by-step:');
+    console.log('  How use the Marvin, step-by-step:');
     console.log();
     console.log();
-    console.log(`    ${chalk.bgRed(' 1. ')}: Create um file with name .workflow and these content below`);
+    console.log(`    ${chalk.bgRed(' 1. ')}: Create um file with name .marvin and these content below`);
     console.log();
     console.log('          $content = watch ./src/file --async {');
     console.log('            log file changed');
@@ -31,14 +30,14 @@ program
     console.log();
     console.log(`    ${chalk.bgRed(' 2. ')}: Run the file`);
     console.log();
-    console.log('          worflow');
+    console.log('          marvin');
     console.log();
     console.log();
     console.log();
   })
   .parse(process.argv);
 
-const fileToExecute = idx(program, _ => _.args[0]) || '.workflow';
+const fileToExecute = idx(program, _ => _.args[0]) || '.marvin';
 const pathComplete = path.resolve(process.cwd(), fileToExecute);
 
 runFile(pathComplete, libExternals);
