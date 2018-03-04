@@ -1,6 +1,6 @@
 {
   "name": "marvin-cli",
-  "version": "1.0.0-alpha-1",
+  "version": "1.0.0",
   "main": "index.js",
   "author": "Carlos Alexandre Fuechter <fuechter.carlos@gmail.com>",
   "license": "MIT",
