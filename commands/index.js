@@ -25,3 +25,4 @@ export { default as lower } from './lower';
 export { default as upper } from './upper';
 export { default as if } from './if';
 export { default as unless } from './unless';
+export { default as remove } from './remove';
