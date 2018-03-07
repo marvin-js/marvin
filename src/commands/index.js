@@ -26,3 +26,4 @@ export { default as upper } from './upper';
 export { default as if } from './if';
 export { default as unless } from './unless';
 export { default as remove } from './remove';
+export { default as template } from './template';
