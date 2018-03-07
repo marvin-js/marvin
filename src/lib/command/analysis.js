@@ -3,6 +3,7 @@ import XRegExp from 'xregexp';
 
 import { readFile } from '../file';
 import { pure } from './helper';
+import { transformValue } from '../value';
 import { 
   isCommandWithSubCommand, 
   getNameWithSubCommand, 
@@ -13,9 +14,6 @@ import {
   getSubCommand, 
   replaceSubCommand,
   findAllParamsAndOptions,
-  isText,
-  isBoolean,
-  isNumber,
   findAllCommand as findAllCommandRegex
 } from '../regex';
 
@@ -53,16 +51,6 @@ export const findAllCommand = (content) => {
     return acc;
 
   }, []);
-};
-
-export const transformValue  = (value) => {
-
-  if (typeof value === 'boolean') return value
-  if (isText.exec(value)) return value.replace(isText, '\$1');
-  if (isBoolean.exec(value)) return value === 'true';
-  if (isNumber.exec(value)) return parseInt(value);
-
-  return value;
 };
 
 export function processCommand (command) {
