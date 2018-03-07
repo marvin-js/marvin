@@ -27,6 +27,21 @@ test('command get config', t => {
   t.deepEqual(processCommand(commandTest), resultObject);
 });
 
+test('command get config 2', t => {
+
+  const commandTest = 'cp teste:"hello" hellow:test teste:123 otherParams:"hello world" url:"http://github.com.br"';
+
+  const resultObject = {
+    command: 'cp',
+    args: ['teste:"hello"', 'hellow:test', 'teste:123', 'otherParams:"hello world"', 'url:"http://github.com.br"'],
+    options: {},
+    commands: [],
+    setVariables: undefined,
+  };
+
+  t.deepEqual(processCommand(commandTest), resultObject);
+});
+
 test('command get config with text', t => {
 
   const commandTest = 'cp /test2 "teste"';
