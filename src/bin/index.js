@@ -8,13 +8,14 @@ import path from 'path';
 
 import packageJSON from '../../package.json';
 import { runFile } from '../lib/command';
+import { findFileWorkflow } from '../lib/workflow-file';
 import * as libExternals from '../commands';
 
 program
   .version(packageJSON.version)
-  .command('marvin')
-  .usage('[file ...] [options]')
+  .usage('[options] [file ...]')
   .description('Create a complex workflow in a simpler way')
+  .option('-d --dir <dir>', 'Root directory where files marvins will be search')
   .on('--help', () => {
     console.log();
     console.log();
@@ -37,9 +38,9 @@ program
   })
   .parse(process.argv);
 
-const fileToExecute = idx(program, _ => _.args[0]) || '.marvin';
-const pathComplete = path.resolve(process.cwd(), fileToExecute);
-
-runFile(pathComplete, libExternals);
+runFile(findFileWorkflow(program.args, {
+  exitOnError: true,
+  dir: program.dir,
+}), libExternals);
 
 
