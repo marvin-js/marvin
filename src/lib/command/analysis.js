@@ -1,6 +1,8 @@
 import idx from 'idx';
 import XRegExp from 'xregexp';
+import chalk from 'chalk';
 
+import log from '../log';
 import { readFile } from '../file';
 import { pure } from './helper';
 import { transformValue } from '../value';
@@ -105,7 +107,11 @@ export function processCommand (command) {
 };
 
 export async function processCommandFile (fileToExecute) {
+  const updateFile = log.draft(`Read file: ...`);
   const content = await readFile(fileToExecute);
+  updateFile(`${chalk.green('✔')} Read file: ok`);
+  const updateAnalysis = log.draft(`Scan file: ...`);
   const actions = pure(findAllCommand(content)).map(command => processCommand(command));
+  updateAnalysis(`${chalk.green('✔')} Scan file: ok`);
   return actions;
 };

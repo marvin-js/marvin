@@ -1,5 +1,7 @@
 import { processCommandFile } from './analysis';
 import { generateCommand } from './exec';
+import log from '../log';
+import chalk from 'chalk';
 
 export async function runFile (fileToExecute, libExternal) {
   const actions = await processCommandFile(fileToExecute);
@@ -13,5 +15,8 @@ export async function runFile (fileToExecute, libExternal) {
       getStore: (name) => store[name],
     },
   });
-  return execute();
+
+  console.log('\nExecuting the workflow... \n');
+  return execute()
+  .then(() => log.draft(`\n${chalk.green('✔')} Workflow finished`));
 };
