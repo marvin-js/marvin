@@ -24,6 +24,14 @@ const executeAfterAction = (action : Action, opts : OptionsExec) => (result) => 
   return executeSubCommands(action, opts);
 };
 
+const getCommand = (opts: OptionsExec, command: string) => {
+  const commandExternal = opts.libExternal[command];
+
+  if (!commandExternal) return require('requireg')(`marvin-${command}`);
+
+  return commandExternal;
+};
+
 const executeAction = (action : Action, opts : OptionsExec, idChain) => {
 
   if (!action) return Promise.resolve();
@@ -36,7 +44,7 @@ const executeAction = (action : Action, opts : OptionsExec, idChain) => {
 
   promiseWrapper = promiseWrapper.then(() => {
     const resultVariables = getResultVariables(action.options, action.args, opts.store);
-    const resultCommand = opts.libExternal[action.command].call({}, resultVariables.options, ...resultVariables.args);
+    const resultCommand = getCommand(opts, action.command).call({}, resultVariables.options, ...resultVariables.args);
     const isFunctionResultCommand = typeof resultCommand === 'function';
     const result = isFunctionResultCommand ? resultCommand(executeAfterAction(action, opts)) : resultCommand;
 
