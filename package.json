@@ -39,6 +39,9 @@
     "sinon": "^4.2.2"
   },
   "ava": {
+    "files": [
+			"src/**/*.test.js"
+		],
     "babel": "inherit",
     "require": [
       "babel-core/register",
@@ -48,7 +51,7 @@
   "scripts": {
     "build": "babel src --out-dir dist",
     "prepublish": "npm run build",
-    "test": "nyc ava",
+    "test": "NODE_ENV=test nyc ava",
     "report": "nyc report --reporter=html",
     "coverage": "npm test && nyc report --reporter=text-lcov | coveralls",
     "flow": "flow"

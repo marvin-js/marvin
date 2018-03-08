@@ -56,9 +56,15 @@ export const findAllCommand = (content) => {
 };
 
 function existCommand (command, libExternal) {
-  if (libExternal[command] === undefined) {
+
+  if (libExternal && !libExternal[command]) {
     console.log(`\n${chalk.red('✖')} Command '${command}' doesn't exist`)
-    process.exit(1);
+
+    if (process.env.NODE_ENV === 'test') {
+      return false;
+    } else {
+      process.exit(1);
+    }
   }
 
   return true;
