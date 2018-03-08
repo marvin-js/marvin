@@ -55,7 +55,16 @@ export const findAllCommand = (content) => {
   }, []);
 };
 
-export function processCommand (command) {
+function existCommand (command, libExternal) {
+  if (libExternal[command] === undefined) {
+    console.log(`\n${chalk.red('✖')} Command '${command}' doesn't exist`)
+    process.exit(1);
+  }
+
+  return true;
+};
+
+export function processCommand (command, libExternal) {
 
   let subCommands;
   let setVariables;
@@ -68,7 +77,7 @@ export function processCommand (command) {
 
   if (!command) return;
 
-  const subCommandsProcessed = subCommands ? subCommands.map(subCommand => processCommand(subCommand)) : [];
+  const subCommandsProcessed = subCommands ? subCommands.map(subCommand => processCommand(subCommand, libExternal)) : [];
 
   if (findVariables.test(command)) {
     setVariables = [getVariables.exec(command)[1]];
@@ -97,6 +106,8 @@ export function processCommand (command) {
     config.options.__hasReturn = true;
   }
 
+  existCommand(commandMain, libExternal);
+
   return {
     command: commandMain,
     args: pure(config.args),
@@ -106,12 +117,12 @@ export function processCommand (command) {
   };
 };
 
-export async function processCommandFile (fileToExecute) {
+export async function processCommandFile (fileToExecute, libExternal) {
   const updateFile = log.draft(`Read file: ...`);
   const content = await readFile(fileToExecute);
   updateFile(`${chalk.green('✔')} Read file: ok`);
   const updateAnalysis = log.draft(`Scan file: ...`);
-  const actions = pure(findAllCommand(content)).map(command => processCommand(command));
+  const actions = pure(findAllCommand(content)).map(command => processCommand(command, libExternal));
   updateAnalysis(`${chalk.green('✔')} Scan file: ok`);
   return actions;
 };

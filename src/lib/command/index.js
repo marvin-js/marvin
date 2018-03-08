@@ -4,7 +4,7 @@ import log from '../log';
 import chalk from 'chalk';
 
 export async function runFile (fileToExecute, libExternal) {
-  const actions = await processCommandFile(fileToExecute);
+  const actions = await processCommandFile(fileToExecute, libExternal);
   let store = {};
   const execute = generateCommand(actions, {
     libExternal,
