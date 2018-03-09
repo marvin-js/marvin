@@ -86,9 +86,10 @@ $ marvin --help
 - Allow more verbose logs
 - Add more commands like: fetch, template, ftp, git, etc.
 
-
-MIT © [Carlos Alexandre Fuechter](https://github.com/alexandref93)
-
 <p align="center">
   <img src="media/logo.png" / >
+</p>
+
+<p align="center">
+ MIT © <a href="https://github.com/alexandref93">Carlos Alexandre Fuechter</a>
 </p>
