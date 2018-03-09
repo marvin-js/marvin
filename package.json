@@ -14,6 +14,7 @@
     "commander": "^2.13.0",
     "download": "^6.2.5",
     "draftlog": "^1.0.12",
+    "find-root": "^1.1.0",
     "fs-extra": "^5.0.0",
     "has-ansi": "^3.0.0",
     "idx": "^2.2.0",

@@ -6,6 +6,7 @@ import uuid from 'uuid';
 
 import PubSub, { REGISTER_ASYNC, FINISH_ASYNC, ALL_PROCESS_FINISH, VERIFY_ALL_PROCESS } from '../../pubsub';
 import { setResultVariables, getResultVariables } from './variables';
+import { loadPluginExternal } from '../../plugin';
 
 const idsPubSub : {[key: string]: Object} = {};
 
@@ -27,7 +28,7 @@ const executeAfterAction = (action : Action, opts : OptionsExec) => (result) => 
 const getCommand = (opts: OptionsExec, command: string) => {
   const commandExternal = opts.libExternal[command];
 
-  if (!commandExternal) return require('requireg')(`marvin-${command}`);
+  if (!commandExternal) return loadPluginExternal(command);
 
   return commandExternal;
 };

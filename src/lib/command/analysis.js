@@ -6,6 +6,7 @@ import log from '../log';
 import { readFile } from '../file';
 import { pure } from './helper';
 import { transformValue } from '../value';
+import { checkPluginExternalExist } from '../plugin';
 import { 
   isCommandWithSubCommand, 
   getNameWithSubCommand, 
@@ -59,11 +60,7 @@ function existCommand (command, libExternal) {
 
   if (libExternal && !libExternal[command]) {
 
-    const pluginExternal = require('requireg')(`marvin-${command}`);
-
-    if (pluginExternal && typeof pluginExternal === 'function') {
-      return true;
-    }
+    if (checkPluginExternalExist(command)) return true;
 
     console.log(`\n${chalk.red('✖')} Command '${command}' doesn't exist`)
 
