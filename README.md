@@ -1,4 +1,6 @@
-# Marvin
+<p align="center">
+  <img src="media/logo_slogan.png" />
+</p>
 
 > Create a workflow (simple or complex) with Marvin.
 
@@ -86,3 +88,7 @@ $ marvin --help
 
 
 MIT © [Carlos Alexandre Fuechter](https://github.com/alexandref93)
+
+<p align="center">
+  <img src="media/logo.png" / >
+</p>
