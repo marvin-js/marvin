@@ -2,11 +2,13 @@
   <img src="media/logo_slogan.png" />
 </p>
 
-> Create a workflow (simple or complex) with Marvin.
+<p align="center">
+  <a href="https://travis-ci.org/alexandref93/marvin"><img src="https://travis-ci.org/alexandref93/marvin.svg?branch=master" alt="Build Status: Linux" /></a>
+  <a href="https://ci.appveyor.com/project/alexandref93/marvin"><img src="https://ci.appveyor.com/api/projects/status/mixk99ya8j9d1wci?svg=true" alt="Build Status: Windows" /></a>
+  <a href="https://coveralls.io/github/alexandref93/marvin?branch=master"><img src="https://coveralls.io/repos/github/alexandref93/marvin/badge.svg?branch=master" alt="Coverage Status" /></a>
+</p>
 
-[![Build Status: Linux](https://travis-ci.org/alexandref93/marvin.svg?branch=master)](https://travis-ci.org/alexandref93/marvin)
-[![Build status](https://ci.appveyor.com/api/projects/status/mixk99ya8j9d1wci?svg=true)](https://ci.appveyor.com/project/alexandref93/marvin)
-[![Coverage Status](https://coveralls.io/repos/github/alexandref93/marvin/badge.svg?branch=master)](https://coveralls.io/github/alexandref93/marvin?branch=master)
+> Create a workflow (simple or complex) with Marvin.
 
 **The project is still in alpha phase.**
 
