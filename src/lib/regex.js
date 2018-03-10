@@ -1,27 +1,23 @@
-const accented = 'àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ';
+const command = '(\\S+)'
+const params = command;
+const paramsAsString = '(\\"[^"]+\\"|\'[^\']+\')';
+const option = '--\\w+\\=';
+const optionWithParams = `(${option}${params})`;
+const optionWithParamsAsString = `(${option}${paramsAsString})`;
+const allOptions = `${optionWithParams}|${optionWithParamsAsString}`;
+const variable = `\\$\\w+`;
+const setVariable = `\\s=\\s`;
 
-export const findAllCommand = /^(\s*?(\$[a-z_0-9]+)(?:\s=\s))?([a-z\s0-9\/\-_=\.\:$<>"]+?)(\n|$)+?/gmi;
-
-export const findAllParamsAndOptions = /([\w@#!$%ˆ&*()\\\/\.\:]+?\"[\w@#!$%ˆ&*()\\\/\.\:\s]+\")|(\"[\w@#!$%ˆ&*()\\\/\.\:\s]+\")|(--\w+\=[\w\/\.\:$]+)|(--\w+\=\"[\w@#!$%ˆ&*()\s\/\\\.\:]+\")|([\w\/\.\:\-$<>]+)/gmi;
-
-export const isCommandWithSubCommand = /{([a-z\n\s0-9\/\-\$=<>_{}"\.\:]*)}/mi;
-
-export const getSubCommand = /{([a-z\n\s0-9\/\-\$<>=_"{}\.\:]*)}/mi;
-
-export const replaceSubCommand = /{[a-z\n\s0-9\/\-\$=<>_"{}\.\:]*}/gmi;
-
-export const getNameWithSubCommand = /(?:\s+?(\$[a-z_0-9]+)(?:\s=\s))?([a-z\s0-9\/\-]*)/gmi;
- 
-export const findVariables = /(\$[a-z_0-9]+)(?:\s=\s)/mi;
-
-export const getVariables = /(\$[a-z_0-9]+)(?:\s=\s)/mi;
-
-export const replaceVariables = /^\$[a-z_0-9]+\s=\s/gmi;
-
-export const isVariable = /(\$[a-z_0-9]+)/mi;
-
-export const isText = /^\"([\w@#!$%ˆ&*()\\\/\.\:\s]+)\"$/mi;
-
+export const findAllCommand = new RegExp(`^(\s*?(${variable})(?:${setVariable}))?(.+?)(\n|$)+?`, 'gmi');
+export const findAllParamsAndOptions = new RegExp(`(\\S+?${paramsAsString})|${paramsAsString}|${allOptions}|${params}`, 'gmi');
+export const isCommandWithSubCommand = /{([\s\S]*)}/mi;
+export const getSubCommand = /{([\s\S]*)}/mi;
+export const replaceSubCommand = /{([\s\S]*)}/mi;
+export const getNameWithSubCommand = new RegExp(`(?:\\s+?${variable}${setVariable})?${params}`, 'gmi');
+export const findVariables = new RegExp(`(${variable})(?:${setVariable})`, 'mi');
+export const getVariables = new RegExp(`(${variable})(?:${setVariable})`, 'mi');
+export const replaceVariables = new RegExp(`^${variable}${setVariable}`, 'gmi')
+export const isVariable = new RegExp(variable, 'mi');
+export const isText = /^(?:\"([^\"]+)\"|\'([^\']+)\')$/mi;
 export const isBoolean = /^(true)|(false)$/mi;
-
-export const isNumber = /^[0-9]+$/mi; 
+export const isNumber = /^\d+$/mi; 

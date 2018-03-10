@@ -29,11 +29,11 @@ test('command get config', t => {
 
 test('command get config 2', t => {
 
-  const commandTest = 'cp teste:"hello" hellow:test teste:123 otherParams:"hello world" url:"http://github.com.br"';
+  const commandTest = 'cp teste:"hello" hellow:test teste:123 otherParams:"hello world" url:"http://github.com" url2:\'http://npm.com\' #dev @channel';
 
   const resultObject = {
     command: 'cp',
-    args: ['teste:"hello"', 'hellow:test', 'teste:123', 'otherParams:"hello world"', 'url:"http://github.com.br"'],
+    args: ['teste:"hello"', 'hellow:test', 'teste:123', 'otherParams:"hello world"', 'url:"http://github.com"', 'url2:\'http://npm.com\'', '#dev', '@channel'],
     options: {},
     commands: [],
     setVariables: undefined,
@@ -59,7 +59,7 @@ test('command get config with text', t => {
 
 test('command get config with text 2', t => {
 
-  const commandTest = 'cp /test2 "http://teste.com.br/2"';
+  const commandTest = 'cp /test2 \'http://teste.com.br/2\' ';
 
   const resultObject = {
     command: 'cp',
@@ -112,7 +112,7 @@ test('command get config with boolean', t => {
 
 test('command get config with boolean in subcommand', t => {
 
-  const commandTest = `cp true false true true" {
+  const commandTest = `cp true false true true {
     touch false false true true
   }`;
 
