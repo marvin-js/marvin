@@ -71,15 +71,21 @@ export const findAllCommand : TypeFindAllCommand = (content) => {
   }, []);
 };
 
-type TypeExistCommand = (string, TypeLibExternal) => boolean;
+type TypeOptionsExistCommand = {
+  command: string,
+  libExternal: TypeLibExternal,
+  line: number,
+};
 
-const existCommand : TypeExistCommand = (command, libExternal) => {
+type TypeExistCommand = (TypeOptionsExistCommand) => boolean;
+
+const existCommand : TypeExistCommand = ({command, libExternal, line}) => {
 
   if (libExternal && !libExternal[command]) {
 
     if (checkPluginExternalExist(command)) return true;
 
-    console.log(`\n${chalk.red('✖')} Command '${command}' doesn't exist`);
+    console.log(`\n${chalk.keyword('purple').inverse(` Ln ${line} `)}  ${chalk.red('✖')} Command '${command}' doesn't exist`);
 
     if (process.env.NODE_ENV === 'test') {
       return false;
@@ -141,7 +147,11 @@ export const processCommand : TypeProcessCommand = ({command, libExternal, line 
     config.options.__hasReturn = true;
   }
 
-  existCommand(commandMain, libExternal);
+  existCommand({
+    command: commandMain, 
+    libExternal,
+    line,
+  });
 
   return {
     line,
