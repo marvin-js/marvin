@@ -1,6 +1,7 @@
 import idx from 'idx';
 import XRegExp from 'xregexp';
 import chalk from 'chalk';
+import flattenDeep from 'lodash/flattenDeep';
 
 import log from '../log';
 import { readFile } from '../file';
@@ -36,19 +37,23 @@ function setOption (option, callback = f => f) {
 };
 
 export const findAllCommand = (content) => {
-  const result = XRegExp.matchRecursive(content, '{', '}', 'gi', {
+  const result = XRegExp.matchRecursive(content, '{', '}\n?', 'gi', {
     valueNames: ['command', null, 'subcommand', null],
     escapeChar: '\\'
   });
 
   return result.reduce((acc, current) => {
     if (current.name === 'command') {
-      acc = [...acc, ...current.value.match(findAllCommandRegex)];
+      acc = [...acc, ...flattenDeep(current.value.split('\n').map(value => {
+        value = value.trim();
+        if (value === '') return value;
+        return value.match(findAllCommandRegex);
+      }))];
     }
 
     if (current.name === 'subcommand' && acc.length > 0) {
       const index = acc.length - 1;
-      acc[index] = `${acc[index]} {\n${current.value}\n}`;
+      acc[index] = `${acc[index]} {${current.value}}`;
     }
 
     return acc;
@@ -74,20 +79,19 @@ function existCommand (command, libExternal) {
   return true;
 };
 
-export function processCommand (command, libExternal) {
+export function processCommand ({command, libExternal, line = 1} = {}) {
 
-  let subCommands;
+  let subCommandsContent;
   let setVariables;
 
   if (isCommandWithSubCommand.test(command)) {
-    subCommands = pure(findAllCommand(getSubCommand.exec(command)[1]));
-
+    subCommandsContent = getSubCommand.exec(command)[1];
     command = command.replace(replaceSubCommand, '');
   }
 
   if (!command) return;
 
-  const subCommandsProcessed = subCommands ? subCommands.map(subCommand => processCommand(subCommand, libExternal)) : [];
+  const subCommandsProcessed = subCommandsContent ? analyze({content: subCommandsContent, libExternal, lineReference: line - 1}) : [];
 
   if (findVariables.test(command)) {
     setVariables = [getVariables.exec(command)[1]];
@@ -119,6 +123,8 @@ export function processCommand (command, libExternal) {
   existCommand(commandMain, libExternal);
 
   return {
+    line,
+    nextLine: (subCommandsContent ? subCommandsContent.split('\n').length : 1) + line,
     command: commandMain,
     args: pure(config.args),
     options: config.options,
@@ -127,12 +133,25 @@ export function processCommand (command, libExternal) {
   };
 };
 
+function analyze ({content, libExternal, lineReference = 0}) {
+  return findAllCommand(content).reduce((acc, command, lineCommand) => {
+    command = command.trim();
+    if (command === '') return acc;
+    const action = processCommand({command, libExternal, line: (lineCommand + 1) + lineReference});
+    if (action.commands.length > 0) {
+      lineReference = action.nextLine - action.line - 1 + lineReference;
+    }
+    acc.push(action);
+    return acc;
+  }, []);
+};
+
 export async function processCommandFile (fileToExecute, libExternal) {
   const updateFile = log.draft(`Read file: ...`);
   const content = await readFile(fileToExecute);
   updateFile(`${chalk.green('✔')} Read file: ok`);
   const updateAnalysis = log.draft(`Scan file: ...`);
-  const actions = pure(findAllCommand(content)).map(command => processCommand(command, libExternal));
+  const actions = analyze({content, libExternal});
   updateAnalysis(`${chalk.green('✔')} Scan file: ok`);
   return actions;
 };
