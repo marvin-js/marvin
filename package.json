@@ -23,6 +23,7 @@
     "lodash": "^4.17.5",
     "node-notifier": "^5.2.1",
     "requireg": "^0.1.7",
+    "shelljs": "^0.8.1",
     "stream-to-promise": "^2.2.0",
     "uuid": "^3.2.1",
     "wallpaper": "^2.6.0",
