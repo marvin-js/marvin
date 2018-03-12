@@ -59,7 +59,8 @@
   "scripts": {
     "build": "babel src --out-dir dist",
     "prepublish": "npm run build",
-    "test": "npm run lint && npm run flow && npm run ava",
+    "test": "npm run lint && npm run flow  && npm run ava",
+    "test-windows": "npm run lint && npm run ava",
     "ava": "cross-env NODE_ENV=test nyc ava",
     "lint": "eslint 'src/**/*.js'",
     "report": "nyc report --reporter=html",
