@@ -5,5 +5,5 @@
   ],
   "rules": {
     "semi": ["error", "always"],
-  },
+  }
 }
