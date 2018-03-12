@@ -111,7 +111,7 @@ test('process file command generated with result 2', t => {
 
     const object = { 
       method: (opts, orig, dest) => {
-        return dest
+        return dest;
       },
       setStore: (name, value) => store[name] = value,
       getStore: (name) => store[name],
@@ -138,7 +138,7 @@ test('process file command generated with result 2', t => {
 
     return execute().then(() => {
       t.true(cp.firstCall.returned('/test4'));
-      t.true(cp.secondCall.returned('/test5'))
+      t.true(cp.secondCall.returned('/test5'));
       t.true(cp.secondCall.calledWith({opt: '/test4'}, '/test4', '/test5'));
       t.true(mv.calledWith({force: true}, '/test7', '/test4'));
     });
@@ -170,7 +170,7 @@ test('process file command generated with result 3', t => {
 
     const object = { 
       method: (opts, orig, dest) => {
-        return dest
+        return dest;
       },
       setStore: (name, value) => store[name] = value,
       getStore: (name) => store[name],
@@ -205,12 +205,12 @@ test('process file command generated with result 3', t => {
 
     return execute().then(() => {
       t.true(cp.firstCall.returned('/test4'));
-      t.true(cp.secondCall.returned('/test5'))
+      t.true(cp.secondCall.returned('/test5'));
       t.true(cp.secondCall.calledWith({opt: '/test4'}, '/test4', '/test5'));
       t.true(mv.calledWith({force: true}, '/test7', '/test4'));
       t.true(fetch.returned('fetch_test'));
       t.true(otherFunction.calledWith({__hasReturn: true}, 'fetch_test'));
-      t.true(otherFunctionSub.calledWith({}, 'otherFunction_test') )
+      t.true(otherFunctionSub.calledWith({}, 'otherFunction_test') );
     });
   });
 });
@@ -382,7 +382,7 @@ test('process file command generated repeat', t => {
 
     const object = {
       each: (opts, ...items) => repeat(items),
-    }
+    };
 
     const each = sinon.spy(object, 'each');
     const log = sinon.spy();
@@ -396,7 +396,7 @@ test('process file command generated repeat', t => {
       libExternal,
       store: {
         setStore: (name, value) => {
-          store[name] = value
+          store[name] = value;
         },
         getStore: (name) => store[name],
       },
@@ -444,7 +444,7 @@ test('process file command generated repeat with callback', t => {
       libExternal,
       store: {
         setStore: (name, value) => {
-          store[name] = value
+          store[name] = value;
         },
         getStore: (name) => store[name],
       },
@@ -496,7 +496,7 @@ test('process file command generated repeat with multiple subcomands', t => {
       libExternal,
       store: {
         setStore: (name, value) => {
-          store[name] = value
+          store[name] = value;
         },
         getStore: (name) => store[name],
       },

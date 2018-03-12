@@ -4,7 +4,7 @@ import fs from 'fs';
 import { writeFile } from '../utils-test/file';
 import move from './move';
 
-const TEMP_COMMAND_FOLDER = './temp/command-move'
+const TEMP_COMMAND_FOLDER = './temp/command-move';
 const TEMP_COMMAND_MOVE_ORIGIN = `${TEMP_COMMAND_FOLDER}/test5`;
 const TEMP_COMMAND_MOVE_DESTIN = `${TEMP_COMMAND_FOLDER}/test4`;
 

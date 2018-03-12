@@ -8,7 +8,7 @@ export function writeFile (path, contents) {
       if (err) return reject(err);
   
       fs.writeFileSync(path, contents, 'utf8');
-      resolve()
+      resolve();
     });
   });
 }

@@ -16,7 +16,7 @@ const resolvePath = (file, opts = {}) => {
   }
 
   return newPath;
-}
+};
 
 export const findFileWorkflow = (args = [], opts = {}) => {
 

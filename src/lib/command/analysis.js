@@ -26,7 +26,7 @@ import {
 } from '../regex';
 
 function isOption (value : string) : boolean {
-  return value.indexOf('--') !== -1
+  return value.indexOf('--') !== -1;
 };
 
 type TypeCallbackSetOption = (string, any) => void; 
@@ -79,7 +79,7 @@ const existCommand : TypeExistCommand = (command, libExternal) => {
 
     if (checkPluginExternalExist(command)) return true;
 
-    console.log(`\n${chalk.red('✖')} Command '${command}' doesn't exist`)
+    console.log(`\n${chalk.red('✖')} Command '${command}' doesn't exist`);
 
     if (process.env.NODE_ENV === 'test') {
       return false;

@@ -11,4 +11,4 @@ export default (opts, ...items) => {
   }
 
   return repeat(items);
-}
+};

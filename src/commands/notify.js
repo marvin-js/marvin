@@ -10,5 +10,5 @@ export default async function (opts, ...args) {
     }, (err, response, metadata) => {
       resolve(metadata.activationValue);  
     });
-  })
+  });
 };

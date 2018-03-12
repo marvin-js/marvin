@@ -2,5 +2,8 @@
   "parser": "babel-eslint",
   "plugins": [
     "flowtype"
-  ]
+  ],
+  "rules": {
+    "semi": ["error", "always"],
+  },
 }

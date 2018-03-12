@@ -11,7 +11,7 @@ import { loadPluginExternal } from '../../plugin';
 const idsPubSub : {[key: string]: Object} = {};
 
 const executeSubCommands = (action : TypeAction, opts : OptionsExec) => {
-  if (action.commands.length > 0) return generateCommand(action.commands, opts)()
+  if (action.commands.length > 0) return generateCommand(action.commands, opts)();
   return Promise.resolve();
 };
 
@@ -40,7 +40,7 @@ const executeAction = (action : TypeAction, opts : OptionsExec, idChain) => {
   if (!action) return Promise.resolve();
 
   const id = uuid.v1();
-  const pubSub = idsPubSub[idChain]
+  const pubSub = idsPubSub[idChain];
   let promiseWrapper = Promise.resolve();
 
   if (action.options.async) promiseWrapper = promiseWrapper.then((result) => pubSub.publish(REGISTER_ASYNC, { id }).then(() => result));
@@ -78,7 +78,7 @@ const mountChainCommand = (actions : Array<TypeAction> = [], opts : OptionsExec,
 
   for (let conf of getActionsInGenerator(actions, opts)) { 
     promise = promise.then(() => {
-      return executeAction(conf.action, conf.opts, idChain)
+      return executeAction(conf.action, conf.opts, idChain);
     });
   }
 
@@ -106,4 +106,4 @@ export const generateCommand : TypeGenerateCommand = (actions = [], opts) => {
   const idChain = uuid.v1();
   idsPubSub[idChain] = new PubSub();
   return wrapperInstanceGenerator(mountChainCommand(actions, opts, idChain), idChain);
-}
+};
