@@ -25,7 +25,9 @@ const executeAfterAction = (action : Action, opts : OptionsExec) => (result) => 
   return executeSubCommands(action, opts);
 };
 
-const getCommand = (opts: OptionsExec, command: string) => {
+type TypeGetCommand = (OptionsExec, string) => (Function | boolean);
+
+const getCommand : TypeGetCommand = (opts, command) => {
   const commandExternal = opts.libExternal[command];
 
   if (!commandExternal) return loadPluginExternal(command);
@@ -45,13 +47,13 @@ const executeAction = (action : Action, opts : OptionsExec, idChain) => {
 
   promiseWrapper = promiseWrapper.then(() => {
     const resultVariables = getResultVariables(action.options, action.args, opts.store);
-    const resultCommand = getCommand(opts, action.command).call({}, resultVariables.options, ...resultVariables.args);
-    const isFunctionResultCommand = typeof resultCommand === 'function';
-    const result = isFunctionResultCommand ? resultCommand(executeAfterAction(action, opts)) : resultCommand;
+    const command = getCommand(opts, action.command);
+    const resultCommand = typeof command === 'function' ? command.call({}, resultVariables.options, ...resultVariables.args) : command;
+    const result = typeof resultCommand === 'function' ? resultCommand(executeAfterAction(action, opts)) : resultCommand;
 
-    let returnAction = result === undefined ? Promise.resolve() : (result.then ? result : Promise.resolve(result));
+    let returnAction : Promise<*> = result === undefined ? Promise.resolve() : (typeof result !== 'boolean' && result.then ? result : Promise.resolve(result));
   
-    if (!isFunctionResultCommand) returnAction = returnAction.then(executeAfterAction(action, opts));
+    if (typeof resultCommand !== 'function') returnAction = returnAction.then(executeAfterAction(action, opts));
 
     if (action.options.async) {
       returnAction = returnAction.then(() => pubSub.publish(FINISH_ASYNC, id));
