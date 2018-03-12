@@ -1,12 +1,22 @@
 // @flow
 
-export type Action = {
+export type TypeAction = {
   command: string,
-  commands: Array<Action>,
-  options: Array<{
+  commands: Array<TypeAction>,
+  line: number,
+  nextLine: number,
+  options: {
     [string]: string | number | Object | boolean,
-  }>,
+  },
   args: Array<string | number | Object | boolean | Array<*>>,
+};
+
+type OptionsCommand = {
+  [string]: string | number | boolean,
+};
+
+export type TypeLibExternal = {
+  [string]: (OptionsCommand, ...args: Array<string | number | boolean>) => any,
 };
 
 type OptionsLibExternal = {

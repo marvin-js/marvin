@@ -1,7 +1,11 @@
-import idx from 'idx';
+// @flow
+
+import idx from 'idx'; 
 import XRegExp from 'xregexp';
 import chalk from 'chalk';
 import flattenDeep from 'lodash/flattenDeep';
+
+import type { TypeLibExternal, TypeAction } from '../../type-definitions';
 
 import log from '../log';
 import { readFile } from '../file';
@@ -21,11 +25,15 @@ import {
   findAllCommand as findAllCommandRegex
 } from '../regex';
 
-function isOption (value) {
+function isOption (value : string) : boolean {
   return value.indexOf('--') !== -1
 };
 
-function setOption (option, callback = f => f) {
+type TypeCallbackSetOption = (string, any) => void; 
+
+type TypeSetOption = (string, callback? : TypeCallbackSetOption) => void;
+
+const setOption : TypeSetOption = (option, callback) => {
 
   const indexSet = option.indexOf('=');
   const hasValue = indexSet !== -1;
@@ -33,10 +41,12 @@ function setOption (option, callback = f => f) {
   const name = option.substring(2, hasValue ? indexSet : option.length);
   const value = option.substring(indexSet + 1, option.length);
 
-  callback(name, hasValue ? value : true);
+  callback && callback(name, hasValue ? value : true);
 };
 
-export const findAllCommand = (content) => {
+type TypeFindAllCommand = (string) => Array<string>;
+
+export const findAllCommand : TypeFindAllCommand = (content) => {
   const result = XRegExp.matchRecursive(content, '{', '}\n?', 'gi', {
     valueNames: ['command', null, 'subcommand', null],
     escapeChar: '\\'
@@ -61,7 +71,9 @@ export const findAllCommand = (content) => {
   }, []);
 };
 
-function existCommand (command, libExternal) {
+type TypeExistCommand = (string, TypeLibExternal) => boolean;
+
+const existCommand : TypeExistCommand = (command, libExternal) => {
 
   if (libExternal && !libExternal[command]) {
 
@@ -79,7 +91,15 @@ function existCommand (command, libExternal) {
   return true;
 };
 
-export function processCommand ({command, libExternal, line = 1} = {}) {
+type TypeOptionsProcessCommand = {
+  command: string,
+  libExternal: TypeLibExternal,
+  line?: number,
+};
+
+type TypeProcessCommand = (TypeOptionsProcessCommand) => TypeAction | void;
+
+export const processCommand : TypeProcessCommand = ({command, libExternal, line = 1} = {}) => {
 
   let subCommandsContent;
   let setVariables;
@@ -99,10 +119,11 @@ export function processCommand ({command, libExternal, line = 1} = {}) {
   }
 
   const commandSplited = command.split(' ') || [];
+  const commandMain = idx(commandSplited, _ => _[0]) || '';
+  const paramsAndOptionsMatched = command.match(findAllParamsAndOptions);
+  const defaultParamsAndOptions = {args: [], options: {}};
 
-  const commandMain = idx(commandSplited, _ => _[0]);
-
-  const config = command.match(findAllParamsAndOptions).reduce((acc, current, index) => {
+  const config = paramsAndOptionsMatched == null ? defaultParamsAndOptions : paramsAndOptionsMatched.reduce((acc, current, index) => {
     if (index === 0) return acc;
 
     if (isOption(current)) {
@@ -114,7 +135,7 @@ export function processCommand ({command, libExternal, line = 1} = {}) {
     }
 
     return acc;
-  }, {args: [], options: {}});
+  }, defaultParamsAndOptions);
 
   if (setVariables && setVariables.length > 0) {
     config.options.__hasReturn = true;
@@ -133,11 +154,20 @@ export function processCommand ({command, libExternal, line = 1} = {}) {
   };
 };
 
-function analyze ({content, libExternal, lineReference = 0}) {
+type TypeOptionsAnalyze = {
+  content: string,
+  libExternal: TypeLibExternal,
+  lineReference?: number,
+};
+
+type TypeAnalyze = TypeOptionsAnalyze => Array<TypeAction>;
+
+const analyze : TypeAnalyze = ({content, libExternal, lineReference = 0}) => {
   return findAllCommand(content).reduce((acc, command, lineCommand) => {
     command = command.trim();
     if (command === '') return acc;
     const action = processCommand({command, libExternal, line: (lineCommand + 1) + lineReference});
+    if (!action) return acc;
     if (action.commands.length > 0) {
       lineReference = action.nextLine - action.line - 1 + lineReference;
     }
@@ -146,7 +176,9 @@ function analyze ({content, libExternal, lineReference = 0}) {
   }, []);
 };
 
-export async function processCommandFile (fileToExecute, libExternal) {
+type TypeProcessCommandFile = (string, TypeLibExternal) => Promise<Array<TypeAction>>;
+
+export const processCommandFile : TypeProcessCommandFile = async (fileToExecute, libExternal) => {
   const updateFile = log.draft(`Read file: ...`);
   const content = await readFile(fileToExecute);
   updateFile(`${chalk.green('✔')} Read file: ok`);

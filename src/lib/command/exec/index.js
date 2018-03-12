@@ -1,6 +1,6 @@
 // @flow
 
-import type { Action, OptionsExec } from '../../../type-definitions';
+import type { TypeAction, OptionsExec } from '../../../type-definitions';
 
 import uuid from 'uuid';
 
@@ -10,12 +10,12 @@ import { loadPluginExternal } from '../../plugin';
 
 const idsPubSub : {[key: string]: Object} = {};
 
-const executeSubCommands = (action : Action, opts : OptionsExec) => {
+const executeSubCommands = (action : TypeAction, opts : OptionsExec) => {
   if (action.commands.length > 0) return generateCommand(action.commands, opts)()
   return Promise.resolve();
 };
 
-const executeAfterAction = (action : Action, opts : OptionsExec) => (result) => {
+const executeAfterAction = (action : TypeAction, opts : OptionsExec) => (result) => {
   setResultVariables(result, action, opts.store);
 
   if (result === false) {
@@ -35,7 +35,7 @@ const getCommand : TypeGetCommand = (opts, command) => {
   return commandExternal;
 };
 
-const executeAction = (action : Action, opts : OptionsExec, idChain) => {
+const executeAction = (action : TypeAction, opts : OptionsExec, idChain) => {
 
   if (!action) return Promise.resolve();
 
@@ -66,13 +66,13 @@ const executeAction = (action : Action, opts : OptionsExec, idChain) => {
   return promiseWrapper;
 };
 
-const getActionsInGenerator = function*(actions : Array<Action>, opts : OptionsExec) {
+const getActionsInGenerator = function*(actions : Array<TypeAction>, opts : OptionsExec) {
   for (let i = 0, _len = actions.length; i < _len; i++) {
     yield {action: actions[i], opts};
   };
 };
 
-const mountChainCommand = (actions : Array<Action> = [], opts : OptionsExec, idChain) => async () => {
+const mountChainCommand = (actions : Array<TypeAction> = [], opts : OptionsExec, idChain) => async () => {
 
   let promise = Promise.resolve();
 
@@ -100,7 +100,7 @@ const wrapperInstanceGenerator : TypeWrapperInstanceGenerator = (callback, idCha
   });
 };
 
-type TypeGenerateCommand =  (Array<Action>, OptionsExec) => Function;
+type TypeGenerateCommand =  (Array<TypeAction>, OptionsExec) => Function;
 
 export const generateCommand : TypeGenerateCommand = (actions = [], opts) => {
   const idChain = uuid.v1();
