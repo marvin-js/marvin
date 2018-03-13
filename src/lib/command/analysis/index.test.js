@@ -2,8 +2,8 @@ import test from 'ava';
 import fs from 'fs';
 import sinon from 'sinon';
 
-import { writeFile } from '../../utils-test/file';
-import { processCommand, processCommandFile } from './analysis';
+import { writeFile } from '../../../utils-test/file';
+import { processCommand, processCommandFile } from './index';
 
 test('command empty should return undefined', t => {
   t.is(processCommand(), undefined);

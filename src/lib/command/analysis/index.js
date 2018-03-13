@@ -5,13 +5,14 @@ import XRegExp from 'xregexp';
 import chalk from 'chalk';
 import flattenDeep from 'lodash/flattenDeep';
 
-import type { TypeLibExternal, TypeAction } from '../../type-definitions';
+import type { TypeLibExternal, TypeAction } from '../../../type-definitions';
 
-import log from '../log';
-import { readFile } from '../file';
-import { pure } from './helper';
-import { transformValue } from '../value';
-import { checkPluginExternalExist } from '../plugin';
+import log from '../../log';
+import { readFile } from '../../file';
+import { pure } from '../helper';
+import { transformValue } from '../../value';
+import { checkPluginExternalExist } from '../../plugin';
+import { isOption, setOption } from './option';
 import { 
   isCommandWithSubCommand, 
   getNameWithSubCommand, 
@@ -23,26 +24,7 @@ import {
   replaceSubCommand,
   findAllParamsAndOptions,
   findAllCommand as findAllCommandRegex
-} from '../regex';
-
-function isOption (value : string) : boolean {
-  return value.indexOf('--') !== -1;
-};
-
-type TypeCallbackSetOption = (string, any) => void; 
-
-type TypeSetOption = (string, callback? : TypeCallbackSetOption) => void;
-
-const setOption : TypeSetOption = (option, callback) => {
-
-  const indexSet = option.indexOf('=');
-  const hasValue = indexSet !== -1;
-
-  const name = option.substring(2, hasValue ? indexSet : option.length);
-  const value = option.substring(indexSet + 1, option.length);
-
-  callback && callback(name, hasValue ? value : true);
-};
+} from '../../regex';
 
 type TypeFindAllCommand = (string) => Array<string>;
 
