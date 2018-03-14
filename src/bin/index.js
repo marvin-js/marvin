@@ -18,13 +18,14 @@ program
   .option('-d --dir <dir>', 'root directory where files marvins will be search')
   .on('--help', help);
 
-program.command('init', 'create a .marvin.yml. case the command is global, the file will created on $HOME, otherwhise on project root')
+program.command('init', 'create a .marvin.yml. case the command is global, the file will created on $HOME, otherwhise on project root');
+program.command('add', 'add a packet to .marvin.yml');
 
 program.parse(process.argv);
 
 const firstParam = idx(program, _ => _.args[0]) || '';
 
-if (firstParam !== 'init') {
+if (firstParam !== 'init' && firstParam !== 'add') {
   runFile(findFileWorkflow(program.args, {
     exitOnError: true,
     dir: program.dir,
