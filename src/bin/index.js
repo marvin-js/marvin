@@ -18,11 +18,17 @@ program
   .option('-d --dir <dir>', 'root directory where files marvins will be search')
   .on('--help', help);
 
+program.command('init', 'create a .marvin.yml. case the command is global, the file will created on $HOME, otherwhise on project root')
+
 program.parse(process.argv);
 
-runFile(findFileWorkflow(program.args, {
-  exitOnError: true,
-  dir: program.dir,
-}), libExternals);
+const firstParam = idx(program, _ => _.args[0]) || '';
+
+if (firstParam !== 'init') {
+  runFile(findFileWorkflow(program.args, {
+    exitOnError: true,
+    dir: program.dir,
+  }), libExternals);
+}
 
 
