@@ -7,6 +7,7 @@ export type TypeAction = {
   nextLine: number,
   options: {
     [string]: string | number | Object | boolean,
+    __hasReturn?: boolean,
   },
   args: Array<string | number | Object | boolean | Array<*>>,
 };

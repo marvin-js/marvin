@@ -1,9 +1,7 @@
 // @flow
 
 import idx from 'idx'; 
-import XRegExp from 'xregexp';
 import chalk from 'chalk';
-import flattenDeep from 'lodash/flattenDeep';
 
 import type { TypeLibExternal, TypeAction } from '../../../type-definitions';
 
@@ -13,6 +11,7 @@ import { pure } from '../helper';
 import { transformValue } from '../../value';
 import { checkPluginExternalExist } from '../../plugin';
 import { isOption, setOption } from './option';
+import { findAllCommand } from './search';
 import { 
   isCommandWithSubCommand, 
   getNameWithSubCommand, 
@@ -20,38 +19,10 @@ import {
   replaceVariables, 
   getVariables,
   isVariable,
-  getSubCommand, 
+  getSubCommand as getSubCommandRegex, 
   replaceSubCommand,
   findAllParamsAndOptions,
-  findAllCommand as findAllCommandRegex
 } from '../../regex';
-
-type TypeFindAllCommand = (string) => Array<string>;
-
-export const findAllCommand : TypeFindAllCommand = (content) => {
-  const result = XRegExp.matchRecursive(content, '{', '}\n?', 'gi', {
-    valueNames: ['command', null, 'subcommand', null],
-    escapeChar: '\\'
-  });
-
-  return result.reduce((acc, current) => {
-    if (current.name === 'command') {
-      acc = [...acc, ...flattenDeep(current.value.split('\n').map(value => {
-        value = value.trim();
-        if (value === '') return value;
-        return value.match(findAllCommandRegex);
-      }))];
-    }
-
-    if (current.name === 'subcommand' && acc.length > 0) {
-      const index = acc.length - 1;
-      acc[index] = `${acc[index]} {${current.value}}`;
-    }
-
-    return acc;
-
-  }, []);
-};
 
 type TypeOptionsExistCommand = {
   command: string,
@@ -85,33 +56,67 @@ type TypeOptionsProcessCommand = {
   line?: number,
 };
 
-type TypeProcessCommand = (TypeOptionsProcessCommand) => TypeAction | void;
+type TypeResultSubCommands = {
+  command: string,
+  commands: Array<TypeAction>,
+  nextLine: number,
+};
 
-export const processCommand : TypeProcessCommand = ({command, libExternal, line = 1} = {}) => {
+type TypeGetSubCommands = ({command: string, line: number, libExternal: TypeLibExternal}) => TypeResultSubCommands;
 
-  let subCommandsContent;
-  let setVariables;
-
+const getSubCommand : TypeGetSubCommands = ({command, line, libExternal}) => {
   if (isCommandWithSubCommand.test(command)) {
-    subCommandsContent = getSubCommand.exec(command)[1];
-    command = command.replace(replaceSubCommand, '');
+    const subCommandsContent = getSubCommandRegex.exec(command)[1];
+
+    return {
+      command: command.replace(replaceSubCommand, ''),
+      commands: subCommandsContent ? analyze({content: subCommandsContent, libExternal, lineReference: line - 1}) : [],
+      nextLine: (subCommandsContent ? subCommandsContent.split('\n').length : 1) + line,
+    };
   }
 
-  if (!command) return;
+  return {
+    command,
+    commands: [],
+    nextLine: line + 1,
+  };
+};
 
-  const subCommandsProcessed = subCommandsContent ? analyze({content: subCommandsContent, libExternal, lineReference: line - 1}) : [];
+type TypeGetSetVariables = ({command: string}) => ({command: string, setVariables?: Array<string>});
 
+const getSetVariables : TypeGetSetVariables = ({command}) => {
   if (findVariables.test(command)) {
-    setVariables = [getVariables.exec(command)[1]];
-    command = command.replace(replaceVariables, '');
+    return {
+      setVariables: [getVariables.exec(command)[1]],
+      command: command.replace(replaceVariables, ''),
+    };
   }
 
-  const commandSplited = command.split(' ') || [];
-  const commandMain = idx(commandSplited, _ => _[0]) || '';
-  const paramsAndOptionsMatched = command.match(findAllParamsAndOptions);
-  const defaultParamsAndOptions = {args: [], options: {}};
+  return {
+    command,
+  };
+};
 
-  const config = paramsAndOptionsMatched == null ? defaultParamsAndOptions : paramsAndOptionsMatched.reduce((acc, current, index) => {
+type TypeResultGetParamsOptions = {
+  options: {
+    [string]: any,
+    __hasReturn?: boolean,
+  },
+  args: Array<any>,
+};
+
+type TypeGetParamsOptions = ({command: string, setVariables?: Array<string>}) => TypeResultGetParamsOptions;
+
+const getParamsOptions : TypeGetParamsOptions = ({command, setVariables}) => {
+  const paramsAndOptionsMatched = command.match(findAllParamsAndOptions);
+  let defaultParamsAndOptions : TypeResultGetParamsOptions = {args: [], options: {}};
+
+  if (setVariables && setVariables.length > 0) {
+    // $FlowFixMe
+    defaultParamsAndOptions.options.__hasReturn = true;
+  };
+
+  return paramsAndOptionsMatched == null ? defaultParamsAndOptions : paramsAndOptionsMatched.reduce((acc, current, index) => {
     if (index === 0) return acc;
 
     if (isOption(current)) {
@@ -124,10 +129,20 @@ export const processCommand : TypeProcessCommand = ({command, libExternal, line 
 
     return acc;
   }, defaultParamsAndOptions);
+};
 
-  if (setVariables && setVariables.length > 0) {
-    config.options.__hasReturn = true;
-  }
+type TypeProcessCommand = (TypeOptionsProcessCommand) => TypeAction | void;
+
+export const processCommand : TypeProcessCommand = ({command, libExternal, line = 1} = {}) => {
+
+  if (!command) return;
+
+  const { command: newCommand, commands, nextLine } = getSubCommand({command, line, libExternal});
+  const { command: newCommandLast, setVariables } = getSetVariables({command: newCommand});
+  const { options, args } = getParamsOptions({command: newCommandLast, setVariables});
+
+  const commandSplited = newCommandLast.split(' ') || [];
+  const commandMain = idx(commandSplited, _ => _[0]) || '';
 
   existCommand({
     command: commandMain, 
@@ -137,12 +152,12 @@ export const processCommand : TypeProcessCommand = ({command, libExternal, line 
 
   return {
     line,
-    nextLine: (subCommandsContent ? subCommandsContent.split('\n').length : 1) + line,
+    nextLine,
     command: commandMain,
-    args: pure(config.args),
-    options: config.options,
+    args: pure(args),
+    options,
     setVariables,
-    commands: subCommandsProcessed,
+    commands,
   };
 };
 
@@ -159,6 +174,7 @@ const analyze : TypeAnalyze = ({content, libExternal, lineReference = 0}) => {
     command = command.trim();
     if (command === '') return acc;
     const action = processCommand({command, libExternal, line: (lineCommand + 1) + lineReference});
+
     if (!action) return acc;
     if (action.commands.length > 0) {
       lineReference = action.nextLine - action.line - 1 + lineReference;
