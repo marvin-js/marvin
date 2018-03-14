@@ -1,6 +1,6 @@
 // @flow
 
-import startsWith from 'lodash/startswith';
+import startsWith from 'lodash/startsWith';
 
 type TypeIsOption = (string) => boolean;
 
