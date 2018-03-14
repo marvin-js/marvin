@@ -15,7 +15,7 @@ program
   .version(packageJSON.version, '-v, --version')
   .usage('[options] [file ...]')
   .description('Create a complex workflow in a simpler way')
-  .option('-d --dir <dir>', 'Root directory where files marvins will be search')
+  .option('-d --dir <dir>', 'root directory where files marvins will be search')
   .on('--help', help);
 
 program.parse(process.argv);
