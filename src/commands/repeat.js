@@ -7,5 +7,5 @@ export default function (opts, count) {
     }
     
     return promise;
-  }
+  };
 }

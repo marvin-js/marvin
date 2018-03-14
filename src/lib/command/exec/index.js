@@ -1,6 +1,6 @@
 // @flow
 
-import type { Action, OptionsExec } from '../../../type-definitions';
+import type { TypeAction, OptionsExec } from '../../../type-definitions';
 
 import uuid from 'uuid';
 
@@ -10,12 +10,12 @@ import { loadPluginExternal } from '../../plugin';
 
 const idsPubSub : {[key: string]: Object} = {};
 
-const executeSubCommands = (action : Action, opts : OptionsExec) => {
-  if (action.commands.length > 0) return generateCommand(action.commands, opts)()
+const executeSubCommands = (action : TypeAction, opts : OptionsExec) => {
+  if (action.commands.length > 0) return generateCommand(action.commands, opts)();
   return Promise.resolve();
 };
 
-const executeAfterAction = (action : Action, opts : OptionsExec) => (result) => {
+const executeAfterAction = (action : TypeAction, opts : OptionsExec) => (result) => {
   setResultVariables(result, action, opts.store);
 
   if (result === false) {
@@ -25,7 +25,9 @@ const executeAfterAction = (action : Action, opts : OptionsExec) => (result) => 
   return executeSubCommands(action, opts);
 };
 
-const getCommand = (opts: OptionsExec, command: string) => {
+type TypeGetCommand = (OptionsExec, string) => (Function | boolean);
+
+const getCommand : TypeGetCommand = (opts, command) => {
   const commandExternal = opts.libExternal[command];
 
   if (!commandExternal) return loadPluginExternal(command);
@@ -33,25 +35,25 @@ const getCommand = (opts: OptionsExec, command: string) => {
   return commandExternal;
 };
 
-const executeAction = (action : Action, opts : OptionsExec, idChain) => {
+const executeAction = (action : TypeAction, opts : OptionsExec, idChain) => {
 
   if (!action) return Promise.resolve();
 
   const id = uuid.v1();
-  const pubSub = idsPubSub[idChain]
+  const pubSub = idsPubSub[idChain];
   let promiseWrapper = Promise.resolve();
 
   if (action.options.async) promiseWrapper = promiseWrapper.then((result) => pubSub.publish(REGISTER_ASYNC, { id }).then(() => result));
 
   promiseWrapper = promiseWrapper.then(() => {
     const resultVariables = getResultVariables(action.options, action.args, opts.store);
-    const resultCommand = getCommand(opts, action.command).call({}, resultVariables.options, ...resultVariables.args);
-    const isFunctionResultCommand = typeof resultCommand === 'function';
-    const result = isFunctionResultCommand ? resultCommand(executeAfterAction(action, opts)) : resultCommand;
+    const command = getCommand(opts, action.command);
+    const resultCommand = typeof command === 'function' ? command.call({}, resultVariables.options, ...resultVariables.args) : command;
+    const result = typeof resultCommand === 'function' ? resultCommand(executeAfterAction(action, opts)) : resultCommand;
 
-    let returnAction = result === undefined ? Promise.resolve() : (result.then ? result : Promise.resolve(result));
+    let returnAction : Promise<*> = result === undefined ? Promise.resolve() : (typeof result !== 'boolean' && result.then ? result : Promise.resolve(result));
   
-    if (!isFunctionResultCommand) returnAction = returnAction.then(executeAfterAction(action, opts));
+    if (typeof resultCommand !== 'function') returnAction = returnAction.then(executeAfterAction(action, opts));
 
     if (action.options.async) {
       returnAction = returnAction.then(() => pubSub.publish(FINISH_ASYNC, id));
@@ -64,19 +66,19 @@ const executeAction = (action : Action, opts : OptionsExec, idChain) => {
   return promiseWrapper;
 };
 
-const getActionsInGenerator = function*(actions : Array<Action>, opts : OptionsExec) {
+const getActionsInGenerator = function*(actions : Array<TypeAction>, opts : OptionsExec) {
   for (let i = 0, _len = actions.length; i < _len; i++) {
     yield {action: actions[i], opts};
   };
 };
 
-const mountChainCommand = (actions : Array<Action> = [], opts : OptionsExec, idChain) => async () => {
+const mountChainCommand = (actions : Array<TypeAction> = [], opts : OptionsExec, idChain) => async () => {
 
   let promise = Promise.resolve();
 
   for (let conf of getActionsInGenerator(actions, opts)) { 
     promise = promise.then(() => {
-      return executeAction(conf.action, conf.opts, idChain)
+      return executeAction(conf.action, conf.opts, idChain);
     });
   }
 
@@ -98,10 +100,10 @@ const wrapperInstanceGenerator : TypeWrapperInstanceGenerator = (callback, idCha
   });
 };
 
-type TypeGenerateCommand =  (Array<Action>, OptionsExec) => Function;
+type TypeGenerateCommand =  (Array<TypeAction>, OptionsExec) => Function;
 
 export const generateCommand : TypeGenerateCommand = (actions = [], opts) => {
   const idChain = uuid.v1();
   idsPubSub[idChain] = new PubSub();
   return wrapperInstanceGenerator(mountChainCommand(actions, opts, idChain), idChain);
-}
+};

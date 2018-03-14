@@ -27,3 +27,5 @@ export { default as if } from './if';
 export { default as unless } from './unless';
 export { default as remove } from './remove';
 export { default as template } from './template';
+export { default as shell } from './shell';
+export { default as list } from './list';

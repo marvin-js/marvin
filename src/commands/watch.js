@@ -5,5 +5,5 @@ export default function (opts, path) {
     chokidar.watch(path).on('all', (event, path) => {
       execute(path);
     });
-  }
+  };
 }

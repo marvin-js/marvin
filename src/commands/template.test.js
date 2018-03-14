@@ -4,7 +4,7 @@ import fs from 'fs';
 import { writeFile } from '../utils-test/file';
 import template from './template';
 
-const TEMP_COMMAND_TEMPLATE = './temp/template.txt'
+const TEMP_COMMAND_TEMPLATE = './temp/template.txt';
 
 test.before('template', () => writeFile(TEMP_COMMAND_TEMPLATE, `hello <%= name %>`));
 

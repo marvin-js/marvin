@@ -1,8 +1,9 @@
 {
   "name": "marvin-cli",
-  "version": "1.0.0-alpha-5",
+  "version": "1.0.0-alpha-6",
   "main": "index.js",
   "author": "Carlos Alexandre Fuechter <fuechter.carlos@gmail.com>",
+  "repository": "https://github.com/alexandref93/marvin",  
   "license": "MIT",
   "bin": {
     "marvin": "./dist/bin/index.js"
@@ -23,6 +24,7 @@
     "lodash": "^4.17.5",
     "node-notifier": "^5.2.1",
     "requireg": "^0.1.7",
+    "shelljs": "^0.8.1",
     "stream-to-promise": "^2.2.0",
     "uuid": "^3.2.1",
     "wallpaper": "^2.6.0",
@@ -38,6 +40,7 @@
     "coveralls": "^3.0.0",
     "cross-env": "^5.1.3",
     "eslint": "^4.18.2",
+    "eslint-plugin-flowtype": "^2.46.1",
     "flow-bin": "^0.66.0",
     "import": "^0.0.6",
     "jsdoc-parse": "^3.0.1",
@@ -58,11 +61,12 @@
   "scripts": {
     "build": "babel src --out-dir dist",
     "prepublish": "npm run build",
-    "test": "npm run lint && npm run ava",
+    "test": "npm run lint && npm run flow  && npm run ava",
+    "test-windows": "npm run lint && npm run ava",
     "ava": "cross-env NODE_ENV=test nyc ava",
     "lint": "eslint 'src/**/*.js'",
     "report": "nyc report --reporter=html",
-    "coverage": "npm test && nyc report --reporter=text-lcov | coveralls",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "flow": "flow"
   }
 }
