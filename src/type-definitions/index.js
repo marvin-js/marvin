@@ -36,3 +36,11 @@ export type OptionsExec = {
     [key: string]: FunctionLibExternal,
   },
 };
+
+export type TypeConfigMarvin = {
+  packet?: Array<{
+    name: string,
+    path?: string,
+    isLocal?: boolean,
+  }>,
+};
