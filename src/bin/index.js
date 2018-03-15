@@ -8,6 +8,7 @@ import path from 'path';
 import packageJSON from '../../package.json';
 import { runFile } from '../lib/command';
 import { findFileWorkflow } from '../lib/workflow-file';
+import { loadPacket } from '../lib/packet';
 import help from './help';
 import * as libExternals from '../commands';
 
@@ -29,7 +30,7 @@ if (firstParam !== 'init' && firstParam !== 'add') {
   runFile(findFileWorkflow(program.args, {
     exitOnError: true,
     dir: program.dir,
-  }), libExternals);
+  }), loadPacket({libExternal: libExternals}));
 }
 
 
