@@ -21,7 +21,43 @@ append file/text.txt hello world
 
 ## capitalize
 
+Converts the first character of string to upper case and the remaining to lower case.
+
+### Params
+
+| Param   | Description           | Type   |
+|---------|-----------------------|:------:|
+| value   | The content           | string |
+
+### Example
+
+```
+// .marvin
+
+capitalize hello
+```
+
 ## checkbox
+
+A simple checkbox.
+
+![Example](../media/doc/checkbox.gif)
+
+### Params
+
+| Param    | Description           | Type   |
+|----------|-----------------------|:------:|
+| question | The question          | string |
+| ...args  | Options               | string |
+
+### Example
+
+```
+//.marvin
+
+$pizza = checkbox "What is your favorite pizza" pepperoni marguerite "four cheese"
+log $pizza
+```
 
 ## choose
 
