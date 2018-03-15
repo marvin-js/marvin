@@ -1,35 +1,30 @@
 #!/usr/bin/env node
 
-import isInstalledGlobally from 'is-installed-globally';
-import YAML from 'yamljs';
 import program from 'commander';
 import idx from 'idx';
-import path from 'path';
-import fs from 'fs';
-import findRoot from 'find-root';
+
+import { load, save } from '../lib/configYML';
 
 program
   .usage('<name> <path>')
+  .option('--local', 'packet is local');
 
 program.parse(process.argv);
 
-const PATHRC = isInstalledGlobally ? path.resolve(process.env.HOME, '.marvin.yml') : path.resolve(findRoot(process.cwd()), '.marvin.yml');
 const name = idx(program, _ => _.args[0]);
 const pathPacket = idx(program, _ => _.args[1]);
 
 if (name && path) {
 
-  let config = YAML.load(PATHRC);
-
-  if (config === null) config = {};
+  const config = load();
 
   if (!config.packet) config.packet = [];
 
   config.packet.push({
     name,
     path: pathPacket,
+    isLocal: program.isLocal,
   });
 
-
-  fs.writeFileSync(PATHRC, YAML.stringify(config), 'utf8');
+  save(config);
 }
