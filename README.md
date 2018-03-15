@@ -20,6 +20,7 @@
 - [Usage](#usage)
 - [CLI Usage](#cli)
 - [Philosophy](#philosophy)
+- [API Doc](#api-doc)
 - [FAQ](#faq)
 - [Contributing](#contributing)
 
@@ -101,6 +102,10 @@ No, is not a new programming language, is only a script, with objective to help 
 ### How is the syntax?
 
 Read [this doc](docs/how-is-syntax.md).
+
+## API Doc
+
+Read [this doc](docs/all-commands.md).
 
 ## FAQ
 
