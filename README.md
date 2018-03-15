@@ -3,9 +3,9 @@
 </p>
 
 <p align="center">
-  <a href="https://travis-ci.org/alexandref93/marvin"><img src="https://travis-ci.org/alexandref93/marvin.svg?branch=master" alt="Build Status: Linux" /></a>
-  <a href="https://ci.appveyor.com/project/alexandref93/marvin"><img src="https://ci.appveyor.com/api/projects/status/mixk99ya8j9d1wci?svg=true" alt="Build Status: Windows" /></a>
-  <a href="https://coveralls.io/github/alexandref93/marvin?branch=master"><img src="https://coveralls.io/repos/github/alexandref93/marvin/badge.svg?branch=master" alt="Coverage Status" /></a>
+  <a href="https://travis-ci.org/marvin-js/marvin"><img src="https://travis-ci.org/marvin-js/marvin.svg?branch=master" alt="Build Status: Linux" /></a>
+  <a href="https://ci.appveyor.com/project/alexandref93/marvin-yxg1f"><img src="https://ci.appveyor.com/api/projects/status/fp3rxxadd0ss2vn5?svg=true" alt="Build Status: Windows" /></a>
+  <a href="https://coveralls.io/github/marvin-js/marvin?branch=master"><img src="https://coveralls.io/repos/github/marvin-js/marvin/badge.svg?branch=master" alt="Coverage Status" /></a>
 </p>
 
 > Create a workflow (simple or complex) with Marvin.
@@ -17,7 +17,6 @@
 - [Install](#install)
 - [Usage](#usage)
 - [CLI Usage](#cli)
-- [Roadmap](#roadmap)
 
 ## Install
 
@@ -80,13 +79,6 @@ $ marvin --help
 
           marvin
 ```
-
-## Roadmap
-
-- Document all possible commands
-- Allow development plugin
-- Allow more verbose logs
-- Add more commands like: fetch, template, ftp, git, etc.
 
 <p align="center">
   <img src="media/logo.png" / >

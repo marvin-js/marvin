@@ -8,6 +8,7 @@ import path from 'path';
 import packageJSON from '../../package.json';
 import { runFile } from '../lib/command';
 import { findFileWorkflow } from '../lib/workflow-file';
+import { loadPacket } from '../lib/packet';
 import help from './help';
 import * as libExternals from '../commands';
 
@@ -18,11 +19,18 @@ program
   .option('-d --dir <dir>', 'root directory where files marvins will be search')
   .on('--help', help);
 
+program.command('init', 'create a .marvin.yml. case the command is global, the file will created on $HOME, otherwhise on project root');
+program.command('add', 'add a packet to .marvin.yml');
+
 program.parse(process.argv);
 
-runFile(findFileWorkflow(program.args, {
-  exitOnError: true,
-  dir: program.dir,
-}), libExternals);
+const firstParam = idx(program, _ => _.args[0]) || '';
+
+if (firstParam !== 'init' && firstParam !== 'add') {
+  runFile(findFileWorkflow(program.args, {
+    exitOnError: true,
+    dir: program.dir,
+  }), loadPacket({libExternal: libExternals}));
+}
 
 
