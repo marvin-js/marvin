@@ -3,18 +3,21 @@ import findRoot from 'find-root';
 import path from 'path';
 import { loader } from './loader';
 
-const PROJECT_ROOT = findRoot(process.cwd());
-const PROJECT_ROOT_MODULES_LOCAL = path.resolve(PROJECT_ROOT, 'node_modules');
-
 type TypeMountNamePlugin = string => string;
 
 const mountNamePlugin : TypeMountNamePlugin = command => `marvin-${command}`;
 
-const requirePlugin = (command: string, isLocal: boolean = false) => loader({
-  pathModule: PROJECT_ROOT_MODULES_LOCAL,
-  name: mountNamePlugin(command),
-  isLocal,
-});
+const requirePlugin = (command: string, isLocal: boolean = false) => {
+
+  const PROJECT_ROOT = findRoot(process.cwd());
+  const PROJECT_ROOT_MODULES_LOCAL = path.resolve(PROJECT_ROOT, 'node_modules');
+
+  return loader({
+    pathModule: PROJECT_ROOT_MODULES_LOCAL,
+    name: mountNamePlugin(command),
+    isLocal,
+  });
+};
 
 type TypeCheckPluginExternalExist = (string, isLocal? : boolean) => boolean;
 
