@@ -5,7 +5,7 @@ import { loader } from './loader';
 
 type TypeMountNamePlugin = string => string;
 
-const mountNamePlugin : TypeMountNamePlugin = command => `marvin-${command}`;
+const mountNamePlugin : TypeMountNamePlugin = command => `marvin-plugin-${command}`;
 
 const requirePlugin = (command: string, isLocal: boolean = false) => {
 
