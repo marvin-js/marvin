@@ -11,6 +11,10 @@ Add more content to the end of the file.
 | file    | The file to append    | string |
 | ...args | The content on append | string |
 
+### Return
+
+`string`: The content with append.
+
 ### Example
 
 ```
@@ -28,6 +32,10 @@ Converts the first character of string to upper case and the remaining to lower 
 | Param   | Description           | Type   |
 |---------|-----------------------|:------:|
 | value   | The content           | string |
+
+### Return
+
+`string`: The new value.
 
 ### Example
 
@@ -50,6 +58,11 @@ A simple checkbox.
 | question | The question          | string |
 | ...args  | Options               | string |
 
+
+### Return
+
+`Array<string>`; A list with items choiced.
+
 ### Example
 
 ```
@@ -70,6 +83,10 @@ A simple choose.
 | question | The question          | string |
 | ...args  | Options               | string |
 
+### Return
+
+`string`: The item choosed.
+
 ### Example
 
 ```
@@ -88,6 +105,10 @@ A simple choose.
 | Param    | Description             | Type   |
 |----------|-------------------------|:------:|
 | question | The question to confirm | string |
+
+### Return
+
+`boolean`
 
 ### Example
 
@@ -375,6 +396,10 @@ List all folder/files by a path
 |--------------|------------------------------------|:--------:|
 | path         | The path                           |  string  |
 
+### Return
+
+`Array<string>`: A list with files/folders
+
 ### Examples
 
 ```
@@ -406,13 +431,17 @@ log hello world
 
 ## lower
 
-Converts the characters of string to lower case.
+Converts string to lower case.
 
 ### Params
 
 | Param   | Description           | Type   |
 |---------|-----------------------|:------:|
 | value   | The content           | string |
+
+### Return
+
+`string`: The new value.
 
 ### Example
 
@@ -584,12 +613,145 @@ $content = template --file=/template/hello.tmp var1:"hello world" type:js
 
 ## timeout
 
+Sets a timer which executes a expression once after the timer expires.
+
+### Params
+
+| Param        | Description                 | Type   |
+|--------------|-----------------------------|:------:|
+| milliseconds | The milliseconds to execute | number |
+
+### Result
+
+`void`
+
+### Example
+
+```
+//.marvin
+
+timeout 10000 {
+  create /world
+}
+```
+
 ## unless
+
+Test a negative condition
+
+### Params
+
+| Param    | Description                        | Type   |
+|----------|------------------------------------|:------:|
+| ..args   | The conditions                     |  any   |
+
+### Return 
+
+`boolean`
+
+### Example
+
+```
+//.marvin
+
+unless true === false {
+  log hello world
+}
+
+```
 
 ## upper
 
+Converts string to upper case.
+
+### Params
+
+| Param   | Description           | Type   |
+|---------|-----------------------|:------:|
+| value   | The content           | string |
+
+### Return
+
+`string`: The new value.
+
+### Example
+
+```
+// .marvin
+
+upper hello
+```
+
 ## wallpaper
+
+Set/Get a wallpaper
+
+### Params
+
+| Param    | Description                        | Type   |
+|----------|------------------------------------|:------:|
+| path     | The path                           |  any   |
+
+### Return
+
+`string`: The path of wallpaper.
+
+### Example
+
+```
+//.marvin
+
+// set
+wallpaper /background/foo.jpg
+
+// get
+$path = wallpaper
+log $path
+```
 
 ## warn
 
+Log a output on format warn.
+
+### Params
+
+| Param    | Description                        | Type   |
+|----------|------------------------------------|:------:|
+| ...args  | The content                        |  any   |
+
+### Return 
+
+`void`
+
+### Example
+
+```
+// .marvin
+
+warn happened a warn
+
+```
+
 ## watch
+
+Watch for changes on file/folder.
+
+### Params
+
+| Param    | Description                        | Type   |
+|----------|------------------------------------|:------:|
+| path     | The path to watching change        | string |
+
+### Return
+
+`string`: The path changed.
+
+### Example
+
+```
+//.marvin
+
+$path = watch /src/code/*.* {
+  log $path
+}
+```
