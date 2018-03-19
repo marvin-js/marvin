@@ -1,19 +1,28 @@
-# Marvin
+<p align="center">
+  <img src="media/logo_slogan.png" />
+</p>
+
+<p align="center">
+  <a href="https://travis-ci.org/marvin-js/marvin"><img src="https://travis-ci.org/marvin-js/marvin.svg?branch=master" alt="Build Status: Linux" /></a>
+  <a href="https://ci.appveyor.com/project/alexandref93/marvin-yxg1f"><img src="https://ci.appveyor.com/api/projects/status/fp3rxxadd0ss2vn5?svg=true" alt="Build Status: Windows" /></a>
+  <a href="https://coveralls.io/github/marvin-js/marvin?branch=master"><img src="https://coveralls.io/repos/github/marvin-js/marvin/badge.svg?branch=master" alt="Coverage Status" /></a>
+  <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="GitHub license" />
+  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" />
+</p>
 
 > Create a workflow (simple or complex) with Marvin.
 
-[![Build Status: Linux](https://travis-ci.org/marvin-js/marvin.svg?branch=master)](https://travis-ci.org/marvin-js/marvin)
-[![Build Status: Windows](https://ci.appveyor.com/api/projects/status/fp3rxxadd0ss2vn5?svg=true)](https://ci.appveyor.com/project/alexandref93/marvin-yxg1f)
-[![Coverage Status](https://coveralls.io/repos/github/marvin-js/marvin/badge.svg?branch=master)](https://coveralls.io/github/marvin-js/marvin?branch=master)
-
-**The project is still in alpha phase.**
+**The project is still in beta phase.**
 
 # Contents
 
 - [Install](#install)
 - [Usage](#usage)
 - [CLI Usage](#cli)
-- [Roadmap](#roadmap)
+- [Philosophy](#philosophy)
+- [API Doc](#api-doc)
+- [FAQ](#faq)
+- [Contributing](#contributing)
 
 ## Install
 
@@ -52,14 +61,23 @@ $ marvin
 ```shellscript
 $ marvin --help
 
-  Usage: marvin [file ...] [options]
+  Usage: marvin [options] [file ...]
 
   Create a complex workflow in a simpler way
 
 
   Options:
 
-    -h, --help  output usage information
+    -v, --version   output the version number
+    -d --dir <dir>  root directory where files marvins will be search
+    -h, --help      output usage information
+
+
+  Commands:
+
+    init        create a .marvin.yml. case the command is global, the file will created on $HOME, otherwhise on project root
+    add         add a packet to .marvin.yml
+    help [cmd]  display help for [cmd]
 
 
   How use the Marvin, step-by-step:
@@ -77,12 +95,48 @@ $ marvin --help
           marvin
 ```
 
-## Roadmap
+## Philosophy
 
-- Document all possible commands
-- Allow development plugin
-- Allow more verbose logs
-- Add more commands like: fetch, template, ftp, git, etc.
+No, is not a new programming language, is only a script, with objective to help create a workflow on day to day. Without panic, of course.
 
+### How is the syntax?
 
-MIT © [Carlos Alexandre Fuechter](https://github.com/alexandref93)
+Read [this doc](docs/how-is-syntax.md).
+
+## API Doc
+
+Read [this doc](docs/all-commands.md).
+
+## FAQ
+
+Do you have more doubts? Please, [open a issue](https://github.com/marvin-js/marvin/issues/new) and we will discuss :)
+
+### How create a new plugin?
+
+Please take a look at [this boilerplate](https://github.com/marvin-js/boilerplate-marvin-plugin).
+
+### What is a packet?
+
+Is a package with set of plugins.
+
+### How create a new packet?
+
+Please take a look at [this boilerplate](https://github.com/marvin-js/boilerplate-marvin-packet).
+
+### How add a packet?
+
+```shell
+  marvin add packet your-packet /path/packet
+```
+
+## Contributing
+
+Please read [CONTRIBUTING.md](.github/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+<p align="center">
+  <img src="media/logo.png" / >
+</p>
+
+<p align="center">
+ MIT © <a href="https://github.com/alexandref93">Carlos Alexandre Fuechter</a>
+</p>
