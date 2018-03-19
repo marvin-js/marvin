@@ -10,9 +10,7 @@ import { MARVINRC } from '../../const';
 type TypeGetPath = () => string;
 
 // $FlowFixMe
-export const getPath : TypeGetPath = () => {
-  return isInstalledGlobally ? path.resolve(process.env.HOME, MARVINRC) : path.resolve(findRoot(process.cwd()), MARVINRC);
-}
+export const getPath : TypeGetPath = () => isInstalledGlobally ? path.resolve(process.env.HOME, MARVINRC) : path.resolve(findRoot(process.cwd()), MARVINRC);
 
 type TypeGetPathRootConfig = () => string;
 
