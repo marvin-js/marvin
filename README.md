@@ -123,6 +123,12 @@ Is a package with set of plugins.
 
 Please take a look at [this boilerplate](https://github.com/marvin-js/boilerplate-marvin-packet).
 
+### How add a packet?
+
+```shell
+  marvin add packet your-packet /path/packet
+```
+
 ## Contributing
 
 Please read [CONTRIBUTING.md](.github/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
