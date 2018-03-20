@@ -1,6 +1,6 @@
 {
   "name": "marvin-cli",
-  "version": "1.0.0-alpha-6",
+  "version": "1.0.0-beta",
   "main": "index.js",
   "author": "Carlos Alexandre Fuechter <fuechter.carlos@gmail.com>",
   "repository": "https://github.com/marvin-js/marvin",
