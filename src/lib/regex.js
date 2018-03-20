@@ -19,5 +19,5 @@ export const getVariables = new RegExp(`(${variable})(?:${setVariable})`, 'mi');
 export const replaceVariables = new RegExp(`^${variable}${setVariable}`, 'gmi');
 export const isVariable = new RegExp(variable, 'mi');
 export const isText = /^(?:\"([^\"]+)\"|\'([^\']+)\')$/mi;
-export const isBoolean = /^(true)|(false)$/mi;
+export const isBoolean = /^((?:true)|(?:false))$/mi;
 export const isNumber = /^\d+$/mi; 
