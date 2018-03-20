@@ -2,10 +2,11 @@
 import findRoot from 'find-root';
 import path from 'path';
 import { loader } from './loader';
+import { MARVINPLUGIN_PREFIX } from '../const';
 
 type TypeMountNamePlugin = string => string;
 
-export const mountNamePlugin : TypeMountNamePlugin = command => `marvin-plugin-${command}`;
+export const mountNamePlugin : TypeMountNamePlugin = command => `${MARVINPLUGIN_PREFIX}${command}`;
 
 const requirePlugin = (command: string, isLocal: boolean = false) => {
 
