@@ -2,11 +2,11 @@ import fs from 'fs';
 import chalk from 'chalk';
 import path from 'path';
 
-const FILE_DEFAULT = '.marvin';
+import { MARVIN_EXTENSION } from '../const';
 
 const resolvePath = (file, opts = {}) => {
 
-  const nameFile = file.indexOf('.marvin') > -1 ? file : `${file}.marvin`;
+  const nameFile = file.indexOf(MARVIN_EXTENSION) > -1 ? file : `${file}${MARVIN_EXTENSION}`;
   const newPath = path.resolve(process.cwd(), opts.dir ? opts.dir : '', nameFile);
   const exist = fs.existsSync(newPath);
 
@@ -20,10 +20,10 @@ const resolvePath = (file, opts = {}) => {
 
 export const findFileWorkflow = (args = [], opts = {}) => {
 
-  if (args.length === 0) return resolvePath(FILE_DEFAULT, opts);
-  if (args.length === 1) return resolvePath(args[0] || FILE_DEFAULT, opts);
+  if (args.length === 0) return resolvePath(MARVIN_EXTENSION, opts);
+  if (args.length === 1) return resolvePath(args[0] || MARVIN_EXTENSION, opts);
 
   return args.map(arg => {
-    return resolvePath(arg || FILE_DEFAULT, opts);
+    return resolvePath(arg || MARVIN_EXTENSION, opts);
   });
 };
